@@ -21,7 +21,7 @@ entries = [entry for i, entry in enumerate(youtube_file) if i in indices]
 youtube_file.close()
 
 # Download videos and trim to specified clip
-n_videos_to_download = 3
+n_videos_to_download = 5
 downloader = YoutubeDownloader('mp4')
 for entry in entries[:n_videos_to_download]:
     url, start, stop = entry.split(' ')
@@ -29,5 +29,5 @@ for entry in entries[:n_videos_to_download]:
     print('Downloading video...')
     video = downloader.download_url(url, raw_videos_directory)
 
-    print('Trimming...')
-    trimmed = VideoTransformer().trim(video, start, stop, trimmed_videos_directory)
+    print('Trimming...\n')
+    trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)

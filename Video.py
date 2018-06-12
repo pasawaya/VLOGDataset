@@ -8,6 +8,7 @@ import os
 class Video:
     def __init__(self, file_name):
         self.name = file_name
+        self.basename = os.path.split(self.name)[-1]
 
         cap = cv2.VideoCapture(file_name)
         self.n_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -33,6 +34,7 @@ class YoutubeDownloader:
 
     def download_url(self, url, directory):
         filename = str(self.video_id)
+        self.video_id += 1
 
         yt = YouTube(url)
         yt.streams.filter(progressive=True, file_extension=self.file_type) \
@@ -40,8 +42,7 @@ class YoutubeDownloader:
             .desc() \
             .first() \
             .download(output_path=directory, filename=filename)
-        self.video_id += 1
-        return Video(filename + '.' + self.file_type)
+        return Video(os.path.join(directory, filename + '.' + self.file_type))
 
 
 class VideoTransformer:
@@ -49,13 +50,11 @@ class VideoTransformer:
         cap = cv2.VideoCapture(video.name)
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
-        name = os.path.join(directory, video.name.split('.')[0] + '.avi')
+        name = os.path.join(directory, video.basename.split('.')[0] + '.avi')
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out = cv2.VideoWriter(name, fourcc, video.fps, (video.width, video.height))
 
-        duration = stop_frame - start_frame
-
-        for _ in range(duration):
+        for _ in range(stop_frame - start_frame + 1):
             _, frame = cap.read()
             out.write(frame)
         cap.release()
