@@ -11,16 +11,16 @@ class Video:
         self.basename = os.path.split(self.name)[-1]
 
         cap = cv2.VideoCapture(file_name)
-        self.n_frames = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+        self.n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.fps = cap.get(cv2.CAP_PROP_FPS)
+        self.fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.release()
 
     def load_frames(self):
         cap = cv2.VideoCapture(self.name)
         frames = []
-        while cap.isOpened():
+        for _ in range(self.n_frames):
             _, frame = cap.read()
             frames.append(frame)
         cap.release()
