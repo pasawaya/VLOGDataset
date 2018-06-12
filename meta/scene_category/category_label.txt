@@ -1,0 +1,6 @@
+bedroom
+kitchen
+bathroom
+living-room
+dining-room
+none-of-the-above

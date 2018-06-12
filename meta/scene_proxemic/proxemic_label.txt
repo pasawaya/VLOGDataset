@@ -1,0 +1,4 @@
+intimate-space
+personal-space
+social-space
+public-space

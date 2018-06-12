@@ -1,0 +1,9 @@
+more-than-one-person
+one-person-both-hands-hidden
+inconclusive
+no-people
+one-person-one-hand-visible-and-not-touching-anything
+one-person-one-hand-visible-and-touching-something
+one-person-both-hands-visible-and-not-touching-anything
+one-person-both-hands-visible-and-only-one-touching-something
+one-person-both-hands-visible-and-touching-something
