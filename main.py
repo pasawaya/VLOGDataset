@@ -109,7 +109,7 @@ desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 downloader = YoutubeDownloader('mp4', start_id=start_video_id)
-for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx)]:
+for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx-1)]:
     url, start, stop = entry.split(' ')
 
     # Download video, trim to specified clip, then delete original video
