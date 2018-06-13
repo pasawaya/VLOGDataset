@@ -14,7 +14,7 @@ python main.py
 python main.py --gpu_count=8 --images_per_gpu=16
 
 # Download the first 100 videos, then download the next 100 at some later point
-python main.py -n_videos=100
+python main.py --n_videos=100
 ...
 python main.py --start_video_id=100 -n_videos=100
 
