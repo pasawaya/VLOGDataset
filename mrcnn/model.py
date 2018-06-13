@@ -2430,6 +2430,8 @@ class MaskRCNN():
         wh = wy2 - wy1  # window height
         ww = wx2 - wx1  # window width
         print(str(wh) + ", " + str(ww))
+        print(str(wy2) + ", " + str(wy1))
+        print(str(wx2) + ", " + str(wx1))
         scale = np.array([wh, ww, wh, ww])
         # Convert boxes to normalized coordinates on the window
         boxes = np.divide(boxes - shift, scale)
