@@ -7,7 +7,9 @@ from mrcnn import coco
 import shutil
 import scipy.misc as misc
 import argparse
+import warnings
 
+warnings.filterwarnings('ignore')
 
 class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'bus', 'train', 'truck', 'boat', 'traffic light',
@@ -157,7 +159,12 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
             # Verify that detection is confident and below area threshold
             area = np.count_nonzero(mask)
             area_ratio = float(area) / float(total_area)
+            print(area_ratio)
+            print(area_threshold)
+            print(scores[match])
+            print(confidence_threshold)
             if scores[match] >= confidence_threshold and area_ratio <= area_threshold:
+                print('Success')
                 misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
                 mask_idx += 1
 
