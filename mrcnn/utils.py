@@ -454,6 +454,7 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
             scale = max_dim / image_max
 
     # Resize image using bilinear interpolation
+    print(str(scale))
     if scale != 1:
         print(str((round(h * scale), round(w * scale))))
         # image = scipy.misc.imresize(image, (int(round(h * scale)), int(round(w * scale))), interp='bilinear')
