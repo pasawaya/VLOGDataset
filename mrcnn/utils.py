@@ -441,20 +441,22 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
 
     # Scale?
     if min_dim:
-        # Scale up but not down
         scale = max(1, min_dim / min(h, w))
+        print('here1')
     if min_scale and scale < min_scale:
         scale = min_scale
+        print('here2')
 
     # Does it exceed max dim?
     if max_dim and mode == "square":
         image_max = max(h, w)
         if round(image_max * scale) > max_dim:
+            print('here3')
             scale = max_dim / image_max
 
     # Resize image using bilinear interpolation
     if scale != 1:
-        print(str((int(round(h * scale)), int(round(w * scale)))))
+        print(str((round(h * scale), round(w * scale))))
         # image = scipy.misc.imresize(image, (int(round(h * scale)), int(round(w * scale))), interp='bilinear')
         # image = cv2.resize(image, (round(h * scale), round(w * scale)))
         # print('NaN: ' + str(np.isnan(image).any()))
