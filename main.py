@@ -61,7 +61,7 @@ parser.add_argument('--confidence_threshold',
                     type=float,
                     help='Confidence threshold below which mask will be discarded.')
 parser.add_argument('--area_threshold',
-                    default=0.7,
+                    default=0.07,
                     nargs=1,
                     type=float,
                     help='Area threshold above which mask will be discarded.')
@@ -109,19 +109,18 @@ desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 downloader = YoutubeDownloader('mp4', start_id=start_video_id)
-
 for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_idx-1)):
     entry = entries[video_id]
     url, start, stop = entry.split(' ')
 
     # Download video, trim to specified clip, then delete original video
     print('[video ' + str(video_id) + ']')
+    print('\t[downloading video ' + str(video_id) + ']')
     video = downloader.download_url(url, raw_videos_directory)
-    print('\t[downloaded video ' + str(video_id) + ']')
+    print('\t[trimming video ' + str(video_id) + ']')
     trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
     os.remove(video.name)
     frames = trimmed.load_frames(fps=video.fps)
-    print('\t[trimmed video ' + str(video_id) + ']')
 
     # Create directories for current video frames and annotations
     current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
