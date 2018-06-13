@@ -441,7 +441,6 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
 
     # Scale?
     if min_dim:
-        print(str(min_dim) + ', ' + str(h) + ', ' + str(w))
         scale = max(1, min_dim / min(h, w))
     if min_scale and scale < min_scale:
         scale = min_scale
@@ -450,17 +449,10 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
     if max_dim and mode == "square":
         image_max = max(h, w)
         if round(image_max * scale) > max_dim:
-            print(str(image_max) + ', ' + str(scale) + ', ' + str(max_dim))
             scale = float(max_dim) / float(image_max)
 
     # Resize image using bilinear interpolation
-    print(str(scale))
     if scale != 1:
-        print(str((round(h * scale), round(w * scale))))
-        # image = scipy.misc.imresize(image, (int(round(h * scale)), int(round(w * scale))), interp='bilinear')
-        # image = cv2.resize(image, (round(h * scale), round(w * scale)))
-        # print('NaN: ' + str(np.isnan(image).any()))
-        # print('Inf: ' + str(np.isinf(image).any()))
         image = skimage.transform.resize(
             image, (round(h * scale), round(w * scale)), order=1, mode="constant", preserve_range=True)
 
