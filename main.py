@@ -109,14 +109,19 @@ desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 downloader = YoutubeDownloader('mp4', start_id=start_video_id)
-for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx-1)]:
+
+for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_idx-1)):
+    entry = entries[video_id]
     url, start, stop = entry.split(' ')
 
     # Download video, trim to specified clip, then delete original video
+    print('[starting video ' + str(video_id) + ']')
     video = downloader.download_url(url, raw_videos_directory)
+    print('\tDownloaded video ' + str(video_id))
     trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
     os.remove(video.name)
     frames = trimmed.load_frames(fps=video.fps)
+    print('\tTrimmed video ' + str(video_id))
 
     # Create directories for current video frames and annotations
     current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
@@ -125,7 +130,7 @@ for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx
         os.makedirs(current_video_frames_dir)
     if not os.path.exists(current_video_annotations_dir):
         os.makedirs(current_video_annotations_dir)
-
+    print('\tDetecting video ' + str(video_id))
     for i in range(len(frames)):
         current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
         if not os.path.exists(current_frame_annotations_dir):
@@ -158,7 +163,7 @@ for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx
 
     # Delete trimmed video
     os.remove(trimmed.name)
-    print('[Finished video ' + trimmed.basename + ']')
+    print('[finished video ' + str(video_id) + ']')
 
 # Delete raw videos directory
 shutil.rmtree(raw_videos_directory)
