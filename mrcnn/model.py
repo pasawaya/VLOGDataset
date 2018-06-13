@@ -2424,16 +2424,11 @@ class MaskRCNN():
 
         # Translate normalized coordinates in the resized image to pixel
         # coordinates in the original image before resizing
-        print(window)
         window = utils.norm_boxes(window, image_shape[:2])
         wy1, wx1, wy2, wx2 = window
-        print(str(wy2) + ", " + str(wy1))
-        print(str(wx2) + ", " + str(wx1))
         shift = np.array([wy1, wx1, wy1, wx1])
         wh = wy2 - wy1  # window height
         ww = wx2 - wx1  # window width
-        print(str(wh) + ", " + str(ww))
-        print('\n')
         scale = np.array([wh, ww, wh, ww])
         # Convert boxes to normalized coordinates on the window
         boxes = np.divide(boxes - shift, scale)
