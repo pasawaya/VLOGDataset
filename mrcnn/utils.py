@@ -456,6 +456,8 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
     if scale != 1:
         # image = scipy.misc.imresize(image, (int(round(h * scale)), int(round(w * scale))), interp='bilinear')
         # image = cv2.resize(image, (round(h * scale), round(w * scale)))
+        print('NaN: ' + str(np.isnan(image).any()))
+        print('Inf: ' + str(np.isinf(image).any()))
         image = skimage.transform.resize(
             image, (round(h * scale), round(w * scale)), order=1, mode="constant", preserve_range=True)
 
