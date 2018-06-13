@@ -20,7 +20,9 @@ class Video:
         cap = cv2.VideoCapture(self.name)
         frames = []
         for _ in range(self.n_frames):
-            _, frame = cap.read()
+            success, frame = cap.read()
+            if not success:
+                break
             frames.append(frame)
         cap.release()
         return frames
