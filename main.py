@@ -9,6 +9,31 @@ import scipy.misc as misc
 import argparse
 
 
+class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
+               'bus', 'train', 'truck', 'boat', 'traffic light',
+               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
+               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
+               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
+               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
+               'kite', 'baseball bat', 'baseball glove', 'skateboard',
+               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
+               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
+               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
+               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
+               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
+               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
+               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
+               'teddy bear', 'hair drier', 'toothbrush']
+
+weights_directory = 'mrcnn/mask_rcnn_coco.h5'
+model_directory = 'mrcnn/logs'
+
+raw_videos_directory = 'temp'
+trimmed_videos_directory = 'videos'
+annotations_directory = 'annotations'
+
+max_video_idx = 17097
+
 parser = argparse.ArgumentParser(description='Download VLOG dataset and bottle masks.')
 parser.add_argument('--gpu_count',
                     default=1,
@@ -21,10 +46,10 @@ parser.add_argument('--images_per_gpu',
                     type=int,
                     help='Batch size')
 parser.add_argument('--n_videos',
-                    default=100,
+                    default=max_video_idx,
                     nargs=1,
                     type=int,
-                    help='Number of videos to download (maximum is 17097)')
+                    help='Number of videos to download')
 parser.add_argument('--start_video_id',
                     default=0,
                     nargs=1,
@@ -55,29 +80,6 @@ class InferenceConfig(coco.CocoConfig):
     IMAGES_PER_GPU = images_per_gpu
 
 
-class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
-               'bus', 'train', 'truck', 'boat', 'traffic light',
-               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
-               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
-               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
-               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-               'kite', 'baseball bat', 'baseball glove', 'skateboard',
-               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
-               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
-               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
-               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
-               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
-               'teddy bear', 'hair drier', 'toothbrush']
-
-weights_directory = 'mrcnn/mask_rcnn_coco.h5'
-model_directory = 'mrcnn/logs'
-
-raw_videos_directory = 'temp'
-trimmed_videos_directory = 'videos'
-annotations_directory = 'annotations'
-
 if not os.path.exists(raw_videos_directory):
     os.makedirs(raw_videos_directory)
 if not os.path.exists(trimmed_videos_directory):
@@ -107,7 +109,7 @@ desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 downloader = YoutubeDownloader('mp4', start_id=start_video_id)
-for entry in entries[start_video_id:start_video_id + n_videos]:
+for entry in entries[start_video_id:min(start_video_id + n_videos, max_video_idx)]:
     url, start, stop = entry.split(' ')
 
     # Download video, trim to specified clip, then delete original video
