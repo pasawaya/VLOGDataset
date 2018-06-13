@@ -115,13 +115,13 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
     url, start, stop = entry.split(' ')
 
     # Download video, trim to specified clip, then delete original video
-    print('[starting video ' + str(video_id) + ']')
+    print('[video ' + str(video_id) + ']')
     video = downloader.download_url(url, raw_videos_directory)
-    print('\tDownloaded video ' + str(video_id))
+    print('\t[downloaded video ' + str(video_id) + ']')
     trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
     os.remove(video.name)
     frames = trimmed.load_frames(fps=video.fps)
-    print('\tTrimmed video ' + str(video_id))
+    print('\t[trimmed video ' + str(video_id) + ']')
 
     # Create directories for current video frames and annotations
     current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
@@ -130,7 +130,7 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
         os.makedirs(current_video_frames_dir)
     if not os.path.exists(current_video_annotations_dir):
         os.makedirs(current_video_annotations_dir)
-    print('\tDetecting video ' + str(video_id))
+    print('\t[processing video ' + str(video_id) + ']')
     for i in range(len(frames)):
         current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
         if not os.path.exists(current_frame_annotations_dir):
@@ -163,7 +163,6 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
 
     # Delete trimmed video
     os.remove(trimmed.name)
-    print('[finished video ' + str(video_id) + ']')
 
 # Delete raw videos directory
 shutil.rmtree(raw_videos_directory)
