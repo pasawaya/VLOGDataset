@@ -441,17 +441,16 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
 
     # Scale?
     if min_dim:
+        print(str(min_dim) + ', ' + str(h) + ', ' + str(w))
         scale = max(1, min_dim / min(h, w))
-        print('here1')
     if min_scale and scale < min_scale:
         scale = min_scale
-        print('here2')
 
     # Does it exceed max dim?
     if max_dim and mode == "square":
         image_max = max(h, w)
         if round(image_max * scale) > max_dim:
-            print('here3')
+            print(str(image_max) + ', ' + str(scale) + ', ' + str(max_dim))
             scale = max_dim / image_max
 
     # Resize image using bilinear interpolation
