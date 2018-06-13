@@ -6,6 +6,7 @@ import mrcnn.model as modellib
 from mrcnn.InferenceConfig import InferenceConfig
 from mrcnn import visualize
 import shutil
+import cv2
 
 
 class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
@@ -56,14 +57,14 @@ if not os.path.exists(weights_directory):
     utils.download_trained_weights(weights_directory)
 
 model = modellib.MaskRCNN(mode="inference", model_dir=model_directory, config=InferenceConfig())
-model.load_weights(weights_directory, by_name=True)
+# model.load_weights(weights_directory, by_name=True)
 
 # Get indices of desired objects to mask
 desired_classes = ['bottle', 'cup', 'bowl']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 # Download videos and trim to specified clip
-n_videos_to_download = 1
+n_videos_to_download = 0
 downloader = YoutubeDownloader('mp4')
 for entry in entries[:n_videos_to_download]:
     url, start, stop = entry.split(' ')
@@ -98,15 +99,15 @@ for entry in entries[:n_videos_to_download]:
         if display_masks:
             # Display all instances
             visualize.display_instances(frame,
-                                        result['rois'],
                                         result['masks'],
+                                        result['rois'],
                                         result['class_ids'],
                                         class_names)
 
             # Display only matching instances
             visualize.display_instances(frame,
-                                        result['rois'][matches, :],
                                         result['masks'][:, :, matches],
+                                        result['rois'][matches, :],
                                         result['class_ids'][matches],
                                         class_names)
 
@@ -118,10 +119,18 @@ for entry in entries[:n_videos_to_download]:
 shutil.rmtree(raw_videos_directory)
 
 # Annotation loading example
-annotations_name = os.path.join(annotations_directory, "0.npy")
+video_id = 0
+video_name = os.path.join(trimmed_videos_directory, str(video_id) + ".avi")
+annotations_name = os.path.join(annotations_directory, str(video_id) + ".npy")
+
+frames = Video(video_name).load_frames()
 annotations = np.load(annotations_name)
-for i in range(annotations.shape[0]):
+color = visualize.random_colors(1, bright=True)[0]
+for i in range(len(frames)):
+    frame = frames[i]
     frame_annotations = annotations[i]
-    print('Frame ' + str(i))
-    print('\tclass_ids: ' + str(frame_annotations['class_ids']))
-    print('\tmasks: ' + str(frame_annotations['masks']) + "\n")
+    masks = frame_annotations['masks']
+    for j in range(masks.shape[2]):
+        frame = visualize.apply_mask(frame, masks[:, :, j], color)
+    cv2.imshow("Bottle", frame)
+    cv2.waitKey(30)
