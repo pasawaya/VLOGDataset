@@ -16,10 +16,12 @@ import tensorflow as tf
 import scipy
 import skimage.color
 import skimage.io
+import cv2
 import skimage.transform
 import urllib
 import shutil
 import warnings
+from scipy import misc
 
 # URL from which to download the latest COCO trained weights
 COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5"
@@ -452,9 +454,10 @@ def resize_image(image, min_dim=None, max_dim=None, min_scale=None, mode="square
 
     # Resize image using bilinear interpolation
     if scale != 1:
-        image = skimage.transform.resize(
-            image, (round(h * scale), round(w * scale)),
-            order=1, mode="constant", preserve_range=True)
+        image = scipy.misc.imresize(image, (round(h * scale), round(w * scale)), interp='bilinear')
+        # image = cv2.resize(image, (round(h * scale), round(w * scale)))
+        # image = skimage.transform.resize(
+        #     image, (round(h * scale), round(w * scale)), order=1, mode="constant", preserve_range=True)
 
     # Need padding or cropping?
     if mode == "square":
