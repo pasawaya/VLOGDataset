@@ -67,12 +67,12 @@ parser.add_argument('--area_threshold',
                     help='Area threshold above which mask will be discarded.')
 args = parser.parse_args()
 
-n_videos = args.n_videos[0]
-start_video_id = args.start_video_id[0]
-gpu_count = args.gpu_count[0]
-images_per_gpu = args.images_per_gpu[0]
-area_threshold = args.area_threshold[0]
-confidence_threshold = args.confidence_threshold[0]
+n_videos = args.n_videos[0] if type(args.n_videos) == list else args.n_videos
+start_video_id = args.start_video_id[0] if type(args.start_video_id) == list else args.start_video_id
+gpu_count = args.gpu_count[0] if type(args.gpu_count) == list else args.gpu_count
+images_per_gpu = args.images_per_gpu[0] if type(args.images_per_gpu) == list else args.images_per_gpu
+area_threshold = args.area_threshold[0] if type(args.area_threshold) == list else args.area_threshold
+confidence_threshold = args.confidence_threshold[0] if type(args.confidence_threshold) == list else args.confidence_threshold
 
 
 class InferenceConfig(coco.CocoConfig):
