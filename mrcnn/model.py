@@ -2371,8 +2371,6 @@ class MaskRCNN():
         for image in images:
             # Resize image
             # TODO: move resizing to mold_image()
-            print('NaN: ' + str(np.isnan(image).any()))
-            print('Inf: ' + str(np.isinf(image).any()))
             molded_image, window, scale, padding, crop = utils.resize_image(
                 image,
                 min_dim=self.config.IMAGE_MIN_DIM,
