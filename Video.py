@@ -1,14 +1,13 @@
 
 import cv2
 from pytube import YouTube
-import torchvision.transforms as transforms
 import os
 
 
 class Video:
     def __init__(self, file_name):
         self.name = file_name
-        self.basename = os.path.split(self.name)[-1]
+        self.basename = os.path.split(self.name)[-1].split('.')[0]
 
         cap = cv2.VideoCapture(file_name)
         self.n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
