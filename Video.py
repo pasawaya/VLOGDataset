@@ -16,22 +16,24 @@ class Video:
         self.fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.release()
 
-    def load_frames(self):
+    def load_frames(self, fps):
         cap = cv2.VideoCapture(self.name)
         frames = []
         for _ in range(self.n_frames):
             success, frame = cap.read()
             if not success:
                 break
-            frames.append(frame)
+            if cap.get(cv2.CAP_PROP_POS_FRAMES) % fps == 0:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frames.append(frame)
         cap.release()
         return frames
 
 
 class YoutubeDownloader:
-    def __init__(self, file_type='mp4'):
+    def __init__(self, file_type='mp4', start_id=0):
         self.file_type = file_type
-        self.video_id = 0
+        self.video_id = start_id
 
     def download_url(self, url, directory):
         filename = str(self.video_id)

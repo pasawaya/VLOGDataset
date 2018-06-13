@@ -1,12 +1,58 @@
 
 import numpy as np
 from Video import *
-from mrcnn import utils, coco
+from mrcnn import utils
 import mrcnn.model as modellib
-from mrcnn.InferenceConfig import InferenceConfig
-from mrcnn import visualize
+from mrcnn import coco
 import shutil
-import cv2
+import scipy.misc as misc
+import argparse
+
+
+parser = argparse.ArgumentParser(description='Download VLOG dataset and bottle masks.')
+parser.add_argument('--gpu_count',
+                    default=1,
+                    nargs=1,
+                    type=int,
+                    help='Number of GPUs to use')
+parser.add_argument('--images_per_gpu',
+                    default=1,
+                    nargs=1,
+                    type=int,
+                    help='Batch size')
+parser.add_argument('--n_videos',
+                    default=100,
+                    nargs=1,
+                    type=int,
+                    help='Number of videos to download (maximum is 17097)')
+parser.add_argument('--start_video_id',
+                    default=0,
+                    nargs=1,
+                    type=int,
+                    help='The index of the first video to download')
+parser.add_argument('--confidence_threshold',
+                    default=0.8,
+                    nargs=1,
+                    type=float,
+                    help='Confidence threshold below which mask will be discarded.')
+parser.add_argument('--area_threshold',
+                    default=0.7,
+                    nargs=1,
+                    type=float,
+                    help='Area threshold above which mask will be discarded.')
+args = parser.parse_args()
+
+n_videos = args.n_videos[0]
+start_video_id = args.start_video_id[0]
+gpu_count = args.gpu_count[0]
+images_per_gpu = args.images_per_gpu[0]
+area_threshold = args.area_threshold[0]
+confidence_threshold = args.confidence_threshold[0]
+
+
+class InferenceConfig(coco.CocoConfig):
+    GPU_COUNT = gpu_count
+    IMAGES_PER_GPU = images_per_gpu
 
 
 class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
@@ -32,8 +78,6 @@ raw_videos_directory = 'temp'
 trimmed_videos_directory = 'videos'
 annotations_directory = 'annotations'
 
-display_masks = False
-
 if not os.path.exists(raw_videos_directory):
     os.makedirs(raw_videos_directory)
 if not os.path.exists(trimmed_videos_directory):
@@ -52,85 +96,67 @@ entries = [entry for i, entry in enumerate(youtube_file) if i in indices]
 youtube_file.close()
 
 # Initialize Mask R-CNN
-print('Loading weights...')
 if not os.path.exists(weights_directory):
     utils.download_trained_weights(weights_directory)
 
 model = modellib.MaskRCNN(mode="inference", model_dir=model_directory, config=InferenceConfig())
-# model.load_weights(weights_directory, by_name=True)
+model.load_weights(weights_directory, by_name=True)
 
 # Get indices of desired objects to mask
-desired_classes = ['bottle', 'cup', 'bowl']
+desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
-# Download videos and trim to specified clip
-n_videos_to_download = 0
-downloader = YoutubeDownloader('mp4')
-for entry in entries[:n_videos_to_download]:
+downloader = YoutubeDownloader('mp4', start_id=start_video_id)
+for entry in entries[start_video_id:start_video_id + n_videos]:
     url, start, stop = entry.split(' ')
 
-    print('Downloading video...')
+    # Download video, trim to specified clip, then delete original video
     video = downloader.download_url(url, raw_videos_directory)
-
-    print('Trimming...')
     trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
     os.remove(video.name)
+    frames = trimmed.load_frames(fps=video.fps)
 
-    print('Loading frames...')
-    frames = trimmed.load_frames()
+    # Create directories for current video frames and annotations
+    current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
+    current_video_annotations_dir = os.path.join(annotations_directory, trimmed.basename)
+    if not os.path.exists(current_video_annotations_dir):
+        os.makedirs(current_video_frames_dir)
+    if not os.path.exists(current_video_annotations_dir):
+        os.makedirs(current_video_annotations_dir)
 
-    print('Running Mask R-CNN...')
-    annotations = []
-    for frame in frames:
+    for i in range(len(frames)):
+        current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
+        if not os.path.exists(current_frame_annotations_dir):
+            os.makedirs(current_frame_annotations_dir)
+        frame = frames[i]
+
+        # Save frame
+        frame_path = os.path.join(current_video_frames_dir, str(i) + '.png')
+        misc.imsave(frame_path, frame)
+
+        # Run Mask R-CNN
         result = model.detect([frame])[0]
         classes = result['class_ids']
+        scores = result['scores']
         matches = [i for i, class_id in enumerate(classes) if class_id in desired_classes]
-
-        # Fetch annotations
-        rois = result['rois']
         masks = result['masks']
-        class_ids = result['class_ids']
 
-        # Record frame annotations
-        annotation = {'class_ids': class_ids[matches],
-                      'masks': masks[:, :, matches]}
-        annotations.append(annotation)
+        # Save masks
+        mask_idx = 0
+        mask_root = os.path.join(current_frame_annotations_dir, str(i) + '_')
+        total_area = frame.shape[0] * frame.shape[1]
+        for match in matches:
+            mask = masks[:, :, match]
+            area = np.count_nonzero(mask)
 
-        if display_masks:
-            # Display all instances
-            visualize.display_instances(frame,
-                                        result['masks'],
-                                        result['rois'],
-                                        result['class_ids'],
-                                        class_names)
+            # Verify that detection is confident and below area threshold
+            if scores[match] >= confidence_threshold and area / total_area <= area_threshold:
+                misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
+                mask_idx += 1
 
-            # Display only matching instances
-            visualize.display_instances(frame,
-                                        result['masks'][:, :, matches],
-                                        result['rois'][matches, :],
-                                        result['class_ids'][matches],
-                                        class_names)
-
-    # Save video annotations
-    annotations_name = os.path.join(annotations_directory, trimmed.basename + ".npy")
-    np.save(annotations_name, annotations)
+    # Delete trimmed video
+    os.remove(trimmed.name)
+    print('[Finished video ' + trimmed.basename + ']')
 
 # Delete raw videos directory
 shutil.rmtree(raw_videos_directory)
-
-# Annotation loading example
-video_id = 0
-video_name = os.path.join(trimmed_videos_directory, str(video_id) + ".avi")
-annotations_name = os.path.join(annotations_directory, str(video_id) + ".npy")
-
-frames = Video(video_name).load_frames()
-annotations = np.load(annotations_name)
-color = visualize.random_colors(1, bright=True)[0]
-for i in range(len(frames)):
-    frame = frames[i]
-    frame_annotations = annotations[i]
-    masks = frame_annotations['masks']
-    for j in range(masks.shape[2]):
-        frame = visualize.apply_mask(frame, masks[:, :, j], color)
-    cv2.imshow("Bottle", frame)
-    cv2.waitKey(30)
