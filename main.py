@@ -119,54 +119,58 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
     print('[video ' + str(video_id) + ']')
     print('\t[downloading video ' + str(video_id) + ']')
     video = downloader.download_url(url, raw_videos_directory)
-    print('\t[trimming video ' + str(video_id) + ']')
-    trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
-    os.remove(video.name)
-    frames = trimmed.load_frames(fps=video.fps)
 
-    # Create directories for current video frames and annotations
-    current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
-    current_video_annotations_dir = os.path.join(annotations_directory, trimmed.basename)
-    if not os.path.exists(current_video_annotations_dir):
-        os.makedirs(current_video_frames_dir)
-    if not os.path.exists(current_video_annotations_dir):
-        os.makedirs(current_video_annotations_dir)
-    print('\t[processing video ' + str(video_id) + ']')
-    for i in range(len(frames)):
-        current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
-        if not os.path.exists(current_frame_annotations_dir):
-            os.makedirs(current_frame_annotations_dir)
-        frame = frames[i]
+    if video is not None:
+        print('\t[trimming video ' + str(video_id) + ']')
+        trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
+        os.remove(video.name)
+        frames = trimmed.load_frames(fps=video.fps)
 
-        # Save frame
-        frame_path = os.path.join(current_video_frames_dir, str(i) + '.png')
-        misc.imsave(frame_path, frame)
+        # Create directories for current video frames and annotations
+        current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
+        current_video_annotations_dir = os.path.join(annotations_directory, trimmed.basename)
+        if not os.path.exists(current_video_annotations_dir):
+            os.makedirs(current_video_frames_dir)
+        if not os.path.exists(current_video_annotations_dir):
+            os.makedirs(current_video_annotations_dir)
+        print('\t[processing video ' + str(video_id) + ']')
+        for i in range(len(frames)):
+            current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
+            if not os.path.exists(current_frame_annotations_dir):
+                os.makedirs(current_frame_annotations_dir)
+            frame = frames[i]
 
-        # Run Mask R-CNN
-        result = model.detect([frame])[0]
-        classes = result['class_ids']
-        scores = result['scores']
-        matches = [i for i, class_id in enumerate(classes) if class_id in desired_classes]
-        masks = result['masks']
+            # Save frame
+            frame_path = os.path.join(current_video_frames_dir, str(i) + '.png')
+            misc.imsave(frame_path, frame)
 
-        # Save masks
-        mask_idx = 0
-        mask_root = os.path.join(current_frame_annotations_dir, str(i) + '_')
-        total_area = frame.shape[0] * frame.shape[1]
-        for match in matches:
-            mask = masks[:, :, match]
-            confidence = scores[match]
+            # Run Mask R-CNN
+            result = model.detect([frame])[0]
+            classes = result['class_ids']
+            scores = result['scores']
+            matches = [i for i, class_id in enumerate(classes) if class_id in desired_classes]
+            masks = result['masks']
 
-            # Verify that detection is confident and below area threshold
-            area = np.count_nonzero(mask)
-            area_ratio = float(area) / float(total_area)
+            # Save masks
+            mask_idx = 0
+            mask_root = os.path.join(current_frame_annotations_dir, str(i) + '_')
+            total_area = frame.shape[0] * frame.shape[1]
+            for match in matches:
+                mask = masks[:, :, match]
+                confidence = scores[match]
 
-            if confidence >= confidence_threshold and area_ratio <= area_threshold:
-                misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
-                mask_idx += 1
+                # Verify that detection is confident and below area threshold
+                area = np.count_nonzero(mask)
+                area_ratio = float(area) / float(total_area)
 
-    # Delete trimmed video
-    os.remove(trimmed.name)
+                if confidence >= confidence_threshold and area_ratio <= area_threshold:
+                    misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
+                    mask_idx += 1
+
+        # Delete trimmed video
+        os.remove(trimmed.name)
+    else:
+        print('\t[skipping video ' + str(video_id) + ']')
 
 # Delete raw videos directory
 shutil.rmtree(raw_videos_directory)

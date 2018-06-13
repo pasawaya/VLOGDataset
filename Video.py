@@ -1,6 +1,7 @@
 
 import cv2
 from pytube import YouTube
+from pytube.exceptions import RegexMatchError
 import os
 
 
@@ -39,7 +40,11 @@ class YoutubeDownloader:
         filename = str(self.video_id)
         self.video_id += 1
 
-        yt = YouTube(url)
+        try:
+            yt = YouTube(url)
+        except RegexMatchError:
+            return None
+
         yt.streams.filter(progressive=True, file_extension=self.file_type) \
             .order_by('resolution') \
             .desc() \
