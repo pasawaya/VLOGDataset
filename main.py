@@ -153,10 +153,11 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
         total_area = frame.shape[0] * frame.shape[1]
         for match in matches:
             mask = masks[:, :, match]
-            area = np.count_nonzero(mask)
 
             # Verify that detection is confident and below area threshold
-            if scores[match] >= confidence_threshold and area / total_area <= area_threshold:
+            area = np.count_nonzero(mask)
+            area_ratio = float(area) / float(total_area)
+            if scores[match] >= confidence_threshold and area_ratio <= area_threshold:
                 misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
                 mask_idx += 1
 
