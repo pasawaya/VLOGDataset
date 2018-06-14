@@ -42,7 +42,7 @@ class YoutubeDownloader:
 
         try:
             yt = YouTube(url)
-        except RegexMatchError:
+        except (RegexMatchError, KeyError):
             return None
 
         yt.streams.filter(progressive=True, file_extension=self.file_type) \
