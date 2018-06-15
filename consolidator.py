@@ -22,7 +22,7 @@ if not os.path.exists(annotations_path):
 
 for directory in os.listdir(root):
     directory = os.path.join(root, directory)
-    if os.path.isdir(directory):
+    if os.path.isdir(directory) and "videos_" in directory or "annotations_" in directory:
         for subdirectory in os.listdir(directory):
             if os.path.isdir(os.path.join(directory, subdirectory)):
                 destination = videos_path if 'videos_' in directory else annotations_path
