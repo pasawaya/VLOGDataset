@@ -42,9 +42,9 @@ increment = args.increment[0]
 destination = args.output_path[0]
 
 for i in range(start, stop, increment):
-    print("\n---------------------")
-    print("Downloading Batch " + str((i - start) / increment) + "-" + str(((i + increment - start) / increment) - 1))
-    print("---------------------")
+    print("\n---------------------------")
+    print("Downloading Videos " + str(i) + "-" + str(i + increment - 1))
+    print("---------------------------")
 
     ssh_command = 'ssh ' + username + '@' + host
 
@@ -62,12 +62,11 @@ for i in range(start, stop, increment):
                     scp_command + 'annotations ' + annotations_destination]
 
     # Clean up command
-    commands = ['rm -r vlog_dataset/VLOGDataset/videos',
-                'rm -r vlog_dataset/VLOGDataset/annotations']
+    commands = ['rm -r /home/zlz/vlog_dataset/VLOGDataset/videos',
+                'rm -r /home/zlz/vlog_dataset/VLOGDataset/annotations']
     clean_command = ssh_command + ' "' + '; '.join(commands) + '"'
 
     # Execute commands
     commands = [download_command] + scp_commands + [clean_command]
     for command in commands:
-        # os.system(command + ' & wait')
-        print(command + ' & wait')
+        os.system(command + ' & wait')
