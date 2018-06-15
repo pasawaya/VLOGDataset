@@ -12,18 +12,20 @@ parser.add_argument('batch_directory',
 args = parser.parse_args()
 
 
-path = args.batch_directory[0]
-videos_path = os.path.join(path, 'videos')
-annotations_path = os.path.join(path, 'annotations')
+root = args.batch_directory[0]
+videos_path = os.path.join(root, 'videos')
+annotations_path = os.path.join(root, 'annotations')
 if not os.path.exists(videos_path):
     os.makedirs(videos_path)
 if not os.path.exists(annotations_path):
     os.makedirs(annotations_path)
 
-for directory in os.listdir(path):
-    if os.path.isdir(os.path.join(path, directory)):
-        for subdirectory in os.listdir(os.path.join(path, directory)):
-            if os.path.isdir(os.path.join(path, directory, subdirectory)):
+for directory in os.listdir(root):
+    directory = os.path.join(root, directory)
+    if os.path.isdir(directory):
+        for subdirectory in os.listdir(directory):
+            if os.path.isdir(os.path.join(directory, subdirectory)):
                 destination = videos_path if 'videos_' in directory else annotations_path
                 if not os.path.exists(os.path.join(destination, subdirectory)):
-                    shutil.move(os.path.join(path, directory, subdirectory), destination)
+                    shutil.move(os.path.join(root, directory, subdirectory), destination)
+                shutil.rmtree(os.path.join(root, directory, subdirectory))
