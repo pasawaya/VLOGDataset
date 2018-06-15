@@ -57,7 +57,7 @@ for i in range(start, stop, increment):
     # Copy to local machine command
     video_destination = os.path.join(destination, 'videos_batch_' + str(i))
     annotations_destination = os.path.join(destination, 'annotations_batch_' + str(i))
-    scp_command = 'scp -r ' + username + '@' + host + '/home/' + username + '/vlog_dataset/VLOGDataset/'
+    scp_command = 'scp -r ' + username + '@' + host + ':/home/' + username + '/vlog_dataset/VLOGDataset/'
     scp_commands = [scp_command + 'videos ' + video_destination,
                     scp_command + 'annotations ' + annotations_destination]
 
