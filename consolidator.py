@@ -28,4 +28,3 @@ for directory in os.listdir(root):
                 destination = videos_path if 'videos_' in directory else annotations_path
                 if not os.path.exists(os.path.join(destination, subdirectory)):
                     shutil.move(os.path.join(directory, subdirectory), destination)
-                shutil.rmtree(os.path.join(directory, subdirectory))
