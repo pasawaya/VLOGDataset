@@ -3,7 +3,7 @@ import os
 import argparse
 import shutil
 
-parser = argparse.ArgumentParser(description='Download VLOG dataset in batches.')
+parser = argparse.ArgumentParser(description='Consolidates batches into a single data folder.')
 parser.add_argument('batch_directory',
                     default='~/Desktop',
                     nargs=1,
