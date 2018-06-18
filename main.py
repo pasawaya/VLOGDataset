@@ -7,6 +7,7 @@ from mrcnn import coco
 import shutil
 import scipy.misc as misc
 import argparse
+from skimage import transform
 import warnings
 
 warnings.filterwarnings('ignore')
@@ -129,16 +130,22 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
         # Create directories for current video frames and annotations
         current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
         current_video_annotations_dir = os.path.join(annotations_directory, trimmed.basename)
-        if not os.path.exists(current_video_annotations_dir):
+        if not os.path.exists(current_video_frames_dir):
             os.makedirs(current_video_frames_dir)
         if not os.path.exists(current_video_annotations_dir):
             os.makedirs(current_video_annotations_dir)
+
+        has_annotations = False
         print('\t[processing video ' + str(video_id) + ']')
         for i in range(len(frames)):
             current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
             if not os.path.exists(current_frame_annotations_dir):
                 os.makedirs(current_frame_annotations_dir)
             frame = frames[i]
+
+            # Resize frame
+            h, w = 320, 240
+            frame = transform.resize(frame, (h, w))
 
             # Save frame
             frame_path = os.path.join(current_video_frames_dir, str(i) + '.png')
@@ -164,8 +171,20 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
                 area_ratio = float(area) / float(total_area)
 
                 if confidence >= confidence_threshold and area_ratio <= area_threshold:
+                    # Save mask
                     misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
                     mask_idx += 1
+                    has_annotations = True
+
+                    # In-paint frame and save
+                    inpainted = cv2.inpaint(frame, mask, 3)
+
+
+
+
+        if not has_annotations:
+            shutil.rmtree(current_video_annotations_dir)
+            shutil.rmtree(current_video_frames_dir)
 
         # Delete trimmed video
         os.remove(trimmed.name)
