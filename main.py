@@ -7,8 +7,8 @@ from mrcnn import coco
 import shutil
 import scipy.misc as misc
 import argparse
-from skimage import transform
 import warnings
+
 
 warnings.filterwarnings('ignore')
 
@@ -33,49 +33,43 @@ model_directory = 'mrcnn/logs'
 
 raw_videos_directory = 'temp'
 trimmed_videos_directory = 'videos'
-annotations_directory = 'annotations'
+data_directory = 'data'
 
 max_video_idx = 17097
 
 parser = argparse.ArgumentParser(description='Download VLOG dataset and bottle masks.')
 parser.add_argument('--gpu_count',
                     default=1,
-                    nargs=1,
                     type=int,
                     help='Number of GPUs to use')
 parser.add_argument('--images_per_gpu',
                     default=1,
-                    nargs=1,
                     type=int,
                     help='Batch size')
 parser.add_argument('--n_videos',
                     default=max_video_idx,
-                    nargs=1,
                     type=int,
                     help='Number of videos to download')
 parser.add_argument('--start_video_id',
                     default=0,
-                    nargs=1,
                     type=int,
                     help='The index of the first video to download')
 parser.add_argument('--confidence_threshold',
                     default=0.8,
-                    nargs=1,
                     type=float,
                     help='Confidence threshold below which mask will be discarded.')
 parser.add_argument('--area_threshold',
                     default=0.07,
-                    nargs=1,
                     type=float,
                     help='Area threshold above which mask will be discarded.')
 args = parser.parse_args()
 
-n_videos = args.n_videos[0] if type(args.n_videos) == list else args.n_videos
-start_video_id = args.start_video_id[0] if type(args.start_video_id) == list else args.start_video_id
-gpu_count = args.gpu_count[0] if type(args.gpu_count) == list else args.gpu_count
-images_per_gpu = args.images_per_gpu[0] if type(args.images_per_gpu) == list else args.images_per_gpu
-area_threshold = args.area_threshold[0] if type(args.area_threshold) == list else args.area_threshold
-confidence_threshold = args.confidence_threshold[0] if type(args.confidence_threshold) == list else args.confidence_threshold
+n = args.n_videos
+start_video_id = args.start_video_id
+gpu_count = args.gpu_count
+images_per_gpu = args.images_per_gpu
+t_area = args.area_threshold
+t_confidence = args.confidence_threshold
 
 
 class InferenceConfig(coco.CocoConfig):
@@ -87,8 +81,8 @@ if not os.path.exists(raw_videos_directory):
     os.makedirs(raw_videos_directory)
 if not os.path.exists(trimmed_videos_directory):
     os.makedirs(trimmed_videos_directory)
-if not os.path.exists(annotations_directory):
-    os.makedirs(annotations_directory)
+if not os.path.exists(data_directory):
+    os.makedirs(data_directory)
 
 # Identify video indices where a bottle is present
 bottle_idx = 4
@@ -112,7 +106,7 @@ desired_classes = ['bottle', 'cup', 'bowl', 'wine glass']
 desired_classes = [class_names.index(class_name) for class_name in desired_classes]
 
 downloader = YoutubeDownloader('mp4', start_id=start_video_id)
-for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_idx-1)):
+for video_id in range(start_video_id, min(start_video_id + n, max_video_idx - 1)):
     entry = entries[video_id]
     url, start, stop = entry.split(' ')
 
@@ -127,29 +121,27 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
         os.remove(video.name)
         frames = trimmed.load_frames(fps=video.fps)
 
-        # Create directories for current video frames and annotations
-        current_video_frames_dir = os.path.join(trimmed_videos_directory, trimmed.basename)
-        current_video_annotations_dir = os.path.join(annotations_directory, trimmed.basename)
-        if not os.path.exists(current_video_frames_dir):
-            os.makedirs(current_video_frames_dir)
-        if not os.path.exists(current_video_annotations_dir):
-            os.makedirs(current_video_annotations_dir)
+        # Create directories for current video frames and masks
+        current_video_directory = os.path.join(data_directory, str(video_id))
+        frames_directory = os.path.join(current_video_directory, 'frames')
+        masks_directory = os.path.join(current_video_directory, 'masks')
+        if not os.path.exists(current_video_directory):
+            os.makedirs(current_video_directory)
+        if not os.path.exists(frames_directory):
+            os.makedirs(frames_directory)
+        if not os.path.exists(masks_directory):
+            os.makedirs(masks_directory)
 
-        has_annotations = False
+        video_has_annotations = False
         print('\t[processing video ' + str(video_id) + ']')
-        for i in range(len(frames)):
-            current_frame_annotations_dir = os.path.join(current_video_annotations_dir, str(i))
-            if not os.path.exists(current_frame_annotations_dir):
-                os.makedirs(current_frame_annotations_dir)
-            frame = frames[i]
-
-            # Resize frame
-            h, w = 320, 240
-            frame = transform.resize(frame, (h, w))
-
-            # Save frame
-            frame_path = os.path.join(current_video_frames_dir, str(i) + '.png')
-            misc.imsave(frame_path, frame)
+        for frame_id in range(len(frames)):
+            current_frames_directory = os.path.join(frames_directory, str(frame_id))
+            current_masks_directory = os.path.join(masks_directory, str(frame_id))
+            if not os.path.exists(current_frames_directory):
+                os.makedirs(current_frames_directory)
+            if not os.path.exists(current_masks_directory):
+                os.makedirs(current_masks_directory)
+            frame = frames[frame_id]
 
             # Run Mask R-CNN
             result = model.detect([frame])[0]
@@ -159,32 +151,38 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
             masks = result['masks']
 
             # Save masks
-            mask_idx = 0
-            mask_root = os.path.join(current_frame_annotations_dir, str(i) + '_')
+            mask_id = 0
             total_area = frame.shape[0] * frame.shape[1]
+            frame_has_annotations = False
             for match in matches:
-                mask = masks[:, :, match]
+                mask = (masks[:, :, match] * 255).astype(np.uint8)
                 confidence = scores[match]
 
                 # Verify that detection is confident and below area threshold
                 area = np.count_nonzero(mask)
                 area_ratio = float(area) / float(total_area)
 
-                if confidence >= confidence_threshold and area_ratio <= area_threshold:
+                if confidence >= t_confidence and area_ratio <= t_area:
+                    # In-paint and save frame
+                    dilated_mask = cv2.dilate(mask, np.ones((9, 9)), iterations=2)
+                    inpainted = cv2.inpaint(frame, dilated_mask, 3, cv2.INPAINT_TELEA)
+                    inpainted_path = os.path.join(current_frames_directory, str(mask_id) + '.png')
+                    misc.imsave(inpainted_path, inpainted)
+
                     # Save mask
-                    misc.imsave(mask_root + str(mask_idx) + '.png', mask * 255)
-                    mask_idx += 1
-                    has_annotations = True
+                    mask_path = os.path.join(current_masks_directory, str(mask_id) + '.png')
+                    misc.imsave(mask_path, mask)
 
-                    # In-paint frame and save
-                    inpainted = cv2.inpaint(frame, mask, 3)
+                    mask_id += 1
+                    video_has_annotations = True
+                    frame_has_annotations = True
 
+            if not frame_has_annotations:
+                shutil.rmtree(current_frames_directory)
+                shutil.rmtree(current_masks_directory)
 
-
-
-        if not has_annotations:
-            shutil.rmtree(current_video_annotations_dir)
-            shutil.rmtree(current_video_frames_dir)
+        if not video_has_annotations:
+            shutil.rmtree(current_video_directory)
 
         # Delete trimmed video
         os.remove(trimmed.name)
@@ -193,3 +191,4 @@ for video_id in range(start_video_id, min(start_video_id + n_videos, max_video_i
 
 # Delete raw videos directory
 shutil.rmtree(raw_videos_directory)
+shutil.rmtree(trimmed_videos_directory)
