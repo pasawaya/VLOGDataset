@@ -1,6 +1,6 @@
 
 import numpy as np
-from Video import *
+from video import *
 from mrcnn import utils
 import mrcnn.model as modellib
 from mrcnn import coco
@@ -8,6 +8,7 @@ import shutil
 import scipy.misc as misc
 import argparse
 import warnings
+from inpaint import *
 
 
 warnings.filterwarnings('ignore')
@@ -62,6 +63,14 @@ parser.add_argument('--area_threshold',
                     default=0.07,
                     type=float,
                     help='Area threshold above which mask will be discarded.')
+parser.add_argument('--inpaint_method',
+                    default='generative',
+                    type=str,
+                    help='Inpainting method.')
+parser.add_argument('--checkpoint_dir',
+                    default='model_logs',
+                    type=str,
+                    help='Directory containing generative in-painting pre-trained model.')
 args = parser.parse_args()
 
 n = args.n_videos
@@ -70,6 +79,8 @@ gpu_count = args.gpu_count
 images_per_gpu = args.images_per_gpu
 t_area = args.area_threshold
 t_confidence = args.confidence_threshold
+inpaint_method = args.inpaint_method
+checkpoint = args.checkpoint_dir
 
 
 class InferenceConfig(coco.CocoConfig):
@@ -114,10 +125,9 @@ for video_id in range(start_video_id, min(start_video_id + n, max_video_idx - 1)
     print('[video ' + str(video_id) + ']')
     print('\t[downloading video ' + str(video_id) + ']')
     video = downloader.download_url(url, raw_videos_directory)
-
     if video is not None:
         print('\t[trimming video ' + str(video_id) + ']')
-        trimmed = VideoTransformer().trim(video, int(start), int(stop), trimmed_videos_directory)
+        trimmed = VideoTransformer.trim(video, int(start), int(stop), trimmed_videos_directory)
         os.remove(video.name)
         frames = trimmed.load_frames(fps=video.fps)
 
@@ -165,7 +175,12 @@ for video_id in range(start_video_id, min(start_video_id + n, max_video_idx - 1)
                 if confidence >= t_confidence and area_ratio <= t_area:
                     # In-paint and save frame
                     dilated_mask = cv2.dilate(mask, np.ones((9, 9)), iterations=2)
-                    inpainted = cv2.inpaint(frame, dilated_mask, 3, cv2.INPAINT_TELEA)
+
+                    if inpaint_method == 'generative':
+                        inpainted = generative_inpaint(frame, dilated_mask, checkpoint)
+                    else:
+                        inpainted = telea_inpaint(frame, dilated_mask)
+
                     inpainted_path = os.path.join(current_frames_directory, str(mask_id) + '.png')
                     misc.imsave(inpainted_path, inpainted)
 

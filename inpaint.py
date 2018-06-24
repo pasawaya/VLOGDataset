@@ -10,6 +10,8 @@ def generative_inpaint(image, mask, checkpoint):
     h, w, _ = image.shape
     grid = 8
 
+    mask = np.expand_dims(mask, 2)
+    mask = np.repeat(mask, 3, axis=2)
     image = image[:h // grid * grid, :w // grid * grid, :]
     mask = mask[:h // grid * grid, :w // grid * grid, :]
 
@@ -17,7 +19,10 @@ def generative_inpaint(image, mask, checkpoint):
     mask = np.expand_dims(mask, 0)
     input_image = np.concatenate([image, mask], axis=2)
 
-    with tf.Session() as sess:
+    sess_config = tf.ConfigProto()
+    sess_config.gpu_options.allow_growth = True
+    tf.reset_default_graph()
+    with tf.Session(config=sess_config) as sess:
         input_image = tf.constant(input_image, dtype=tf.float32)
         output = model.build_server_graph(input_image)
         output = (output + 1.) * 127.5

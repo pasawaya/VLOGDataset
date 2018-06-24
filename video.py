@@ -85,8 +85,7 @@ class VideoTransformer:
         return image, bbox.astype(np.int32)
 
     @staticmethod
-    def crop(image, bbox, length):
-
+    def crop(image, bbox, mask, length):
         y1, x1, y2, x2 = bbox
         x_min, y_min, x_max, y_max = min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)
         w_obj, h_obj = abs(x2 - x1), abs(y2 - y1)
@@ -94,27 +93,9 @@ class VideoTransformer:
         x_obj, y_obj = x_min + (w_obj / 2), y_min + (h_obj / 2)
         (h, w, _) = image.shape
 
-        # Crop image and bbox
         x_min_new, y_min_new = int(max(0, x_obj - (length / 2))), int(max(0, y_obj - (length / 2)))
         x_max_new, y_max_new = int(min(w - 1, x_min_new + length)), int(min(h - 1, y_min_new + length))
 
-        w_new, h_new = x_max_new - x_min_new, y_max_new - y_min_new
         image = image[y_min_new:y_max_new, x_min_new:x_max_new, :]
-        bbox = np.array([0, 0, w_new, h_new])
-
-        # Scale to desired size
-        side_length = max(w_new, h_new)
-        f_xy = float(length) / float(side_length)
-        image, bbox = VideoTransformer.scale(image, bbox, f_xy)
-
-        # Pad
-        new_w, new_h = image.shape[1], image.shape[0]
-        cropped = np.zeros((length, length, image.shape[2]))
-
-        dx = length - new_w
-        dy = length - new_h
-        x_min, y_min = int(dx / 2), int(dy / 2)
-        x_max, y_max = x_min + new_w, y_min + new_h
-
-        cropped[y_min:y_max, x_min:x_max, :] = image
-        return cropped
+        mask = mask[y_min_new:y_max_new, x_min_new:x_max_new]
+        return image, mask
