@@ -1,4 +1,5 @@
 
+import cv2
 import numpy as np
 import tensorflow as tf
 from inpaint_model import InpaintCAModel
@@ -33,3 +34,7 @@ def generative_inpaint(image, mask, checkpoint):
         sess.run(assign_ops)
         result = sess.run(output)
         return result[0][:, :, ::-1]
+
+
+def telea_inpaint(image, mask):
+    return cv2.inpaint(image, mask, 3, cv2.INPAINT_TELEA)
