@@ -86,15 +86,24 @@ class VideoTransformer:
 
     @staticmethod
     def crop(image, bbox, length):
-        y_min, x_min, y_max, x_max = bbox
-        w, h = x_max - x_min, y_max - y_min
+
+        y1, x1, y2, x2 = bbox
+        x_min, y_min, x_max, y_max = min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)
+        w_obj, h_obj = abs(x2 - x1), abs(y2 - y1)
+
+        x_obj, y_obj = x_min + (w_obj / 2), y_min + (h_obj / 2)
+        (h, w, _) = image.shape
 
         # Crop image and bbox
-        image = image[y_min:y_min + h, x_min:x_min + w, :]
-        bbox = np.array([0, 0, x_max - x_min, y_max - y_min])
+        x_min_new, y_min_new = int(max(0, x_obj - (length / 2))), int(max(0, y_obj - (length / 2)))
+        x_max_new, y_max_new = int(min(w - 1, x_min_new + length)), int(min(h - 1, y_min_new + length))
+
+        w_new, h_new = x_max_new - x_min_new, y_max_new - y_min_new
+        image = image[y_min_new:y_max_new, x_min_new:x_max_new, :]
+        bbox = np.array([0, 0, w_new, h_new])
 
         # Scale to desired size
-        side_length = max(w, h)
+        side_length = max(w_new, h_new)
         f_xy = float(length) / float(side_length)
         image, bbox = VideoTransformer.scale(image, bbox, f_xy)
 
