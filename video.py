@@ -73,6 +73,16 @@ class VideoTransformer:
         return Video(name)
 
     @staticmethod
+    def write(frames, path, fps):
+        (h, w, _) = frames[0].shape
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(path, fourcc, fps, (w, h))
+
+        for frame in frames:
+            out.write(frame)
+        out.release()
+
+    @staticmethod
     def scale(image, bbox, f_xy):
         (h, w, _) = image.shape
 
