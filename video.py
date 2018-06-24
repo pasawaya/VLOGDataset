@@ -3,6 +3,7 @@ import cv2
 from pytube import YouTube
 from pytube.exceptions import RegexMatchError
 import os
+import numpy as np
 
 
 class Video:
@@ -54,7 +55,8 @@ class YoutubeDownloader:
 
 
 class VideoTransformer:
-    def trim(self, video, start_frame, stop_frame, directory):
+    @staticmethod
+    def trim(video, start_frame, stop_frame, directory):
         cap = cv2.VideoCapture(video.name)
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
@@ -69,3 +71,41 @@ class VideoTransformer:
         out.release()
 
         return Video(name)
+
+    @staticmethod
+    def scale(image, bbox, f_xy):
+        (h, w, _) = image.shape
+
+        new_w = int(w * f_xy)
+        new_h = int(h * f_xy)
+
+        image = cv2.resize(image, (new_w, new_h))
+        bbox = bbox * f_xy
+
+        return image, bbox.astype(np.int32)
+
+    @staticmethod
+    def crop(image, bbox, length):
+        y_min, x_min, y_max, x_max = bbox
+        w, h = x_max - x_min, y_max - y_min
+
+        # Crop image and bbox
+        image = image[y_min:y_min + h, x_min:x_min + w, :]
+        bbox = np.array([0, 0, x_max - x_min, y_max - y_min])
+
+        # Scale to desired size
+        side_length = max(w, h)
+        f_xy = float(length) / float(side_length)
+        image, bbox = VideoTransformer.scale(image, bbox, f_xy)
+
+        # Pad
+        new_w, new_h = image.shape[1], image.shape[0]
+        cropped = np.zeros((length, length, image.shape[2]))
+
+        dx = length - new_w
+        dy = length - new_h
+        x_min, y_min = int(dx / 2), int(dy / 2)
+        x_max, y_max = x_min + new_w, y_min + new_h
+
+        cropped[y_min:y_max, x_min:x_max, :] = image
+        return cropped
