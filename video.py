@@ -79,6 +79,9 @@ class VideoTransformer:
         out = cv2.VideoWriter(path, fourcc, fps, (w, h))
 
         for frame in frames:
+            if len(frame) == 2:
+                frame = np.expand_dims(frame, 2)
+                frame = np.repeat(frame, 3, axis=2)
             out.write(frame)
         out.release()
 

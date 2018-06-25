@@ -71,6 +71,7 @@ parser.add_argument('--checkpoint_dir',
                     default='model_logs',
                     type=str,
                     help='Directory containing generative in-painting pre-trained model.')
+
 args = parser.parse_args()
 
 n = args.n_videos
@@ -81,6 +82,7 @@ t_area = args.area_threshold
 t_confidence = args.confidence_threshold
 inpaint_method = args.inpaint_method
 checkpoint = args.checkpoint_dir
+visualize = True
 
 
 class InferenceConfig(coco.CocoConfig):
@@ -94,6 +96,7 @@ if not os.path.exists(trimmed_videos_directory):
     os.makedirs(trimmed_videos_directory)
 if not os.path.exists(data_directory):
     os.makedirs(data_directory)
+
 
 # Identify video indices where a bottle is present
 bottle_idx = 4
@@ -143,6 +146,8 @@ for video_id in range(start_video_id, min(start_video_id + n, max_video_idx - 1)
             os.makedirs(masks_directory)
 
         video_has_annotations = False
+        visualization_frames = []
+
         print('\t[processing video ' + str(video_id) + ']')
         for frame_id in range(len(frames)):
             current_frames_directory = os.path.join(frames_directory, str(frame_id))
@@ -192,12 +197,19 @@ for video_id in range(start_video_id, min(start_video_id + n, max_video_idx - 1)
                     video_has_annotations = True
                     frame_has_annotations = True
 
+                    visualization_frames.append(frame)
+                    visualization_frames.append(mask)
+                    visualization_frames.append(inpainted)
+
             if not frame_has_annotations:
                 shutil.rmtree(current_frames_directory)
                 shutil.rmtree(current_masks_directory)
 
         if not video_has_annotations:
             shutil.rmtree(current_video_directory)
+        else:
+            visualization_path = os.path.join(current_video_directory, 'visualization.avi')
+            VideoTransformer.write(visualization_frames, visualization_path, 1)
 
         # Delete trimmed video
         os.remove(trimmed.name)
