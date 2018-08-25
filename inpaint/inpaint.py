@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import tensorflow as tf
-from inpaint_model import InpaintCAModel
+from inpaint.inpaint_model import InpaintCAModel
 
 
 def generative_inpaint(image, mask, checkpoint):
