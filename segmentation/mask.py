@@ -1,6 +1,5 @@
-
-import mrcnn.model as modellib
-from mrcnn import coco
+from segmentation.mrcnn import model as modellib
+from segmentation.mrcnn import coco
 
 class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'bus', 'train', 'truck', 'boat', 'traffic light',
@@ -23,8 +22,8 @@ class MaskRCNN:
     def __init__(self, classes=None,
                  n_gpus=1,
                  batch_size=1,
-                 model_dir='mrcnn/logs',
-                 weights_dir='mrcnn/mask_rcnn_coco.h5'):
+                 model_dir='segmentation/mrcnn/logs',
+                 weights_dir='segmentation/mrcnn/mask_rcnn_coco.h5'):
 
         class InferenceConfig(coco.CocoConfig):
             GPU_COUNT = n_gpus
