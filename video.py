@@ -13,21 +13,26 @@ class Video:
 
         cap = cv2.VideoCapture(file_name)
         self.n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.release()
 
-    def load_frames(self, fps):
+    def load_frames(self, start, stop, fps=None):
+        if fps is None:
+            fps = self.fps
+
+        assert fps <= self.fps
+
+        frame_indices = np.linspace(start, stop, num=int(fps * (stop - start) / self.fps), dtype=np.int)
         cap = cv2.VideoCapture(self.name)
         frames = []
-        for _ in range(self.n_frames):
+
+        for i in frame_indices:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, i)
             success, frame = cap.read()
             if not success:
-                break
-            if cap.get(cv2.CAP_PROP_POS_FRAMES) % fps == 0:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frames.append(frame)
+                raise RuntimeError('Could not read frames.')
+            frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+
         cap.release()
         return frames
 
@@ -55,23 +60,6 @@ class YoutubeDownloader:
 
 
 class VideoTransformer:
-    @staticmethod
-    def trim(video, start_frame, stop_frame, directory):
-        cap = cv2.VideoCapture(video.name)
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-
-        name = os.path.join(directory, video.basename.split('.')[0] + '.avi')
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(name, fourcc, video.fps, (video.width, video.height))
-
-        for _ in range(stop_frame - start_frame + 1):
-            _, frame = cap.read()
-            out.write(frame)
-        cap.release()
-        out.release()
-
-        return Video(name)
-
     @staticmethod
     def write(frames, path, fps):
         (h, w, _) = frames[0].shape
