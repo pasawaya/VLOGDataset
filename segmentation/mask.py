@@ -1,5 +1,6 @@
 from segmentation.mrcnn import model as modellib
 from segmentation.mrcnn import coco
+import numpy as np
 
 class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'bus', 'train', 'truck', 'boat', 'traffic light',
@@ -46,5 +47,6 @@ class MaskRCNN:
 
         scores = result['scores'][matches]
         masks = result['masks'][:, :, matches]
+        masks = np.moveaxis(masks, 2, 0)
         return scores, masks
 
