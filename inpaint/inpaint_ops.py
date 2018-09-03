@@ -1,17 +1,11 @@
-import logging
 
 import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.framework.python.ops import add_arg_scope
 
-from neuralgym.ops.layers import resize
 from neuralgym.ops.layers import *
-from neuralgym.ops.loss_ops import *
-from neuralgym.ops.summary_ops import *
 
-
-logger = logging.getLogger()
 np.random.seed(2018)
 
 
@@ -198,7 +192,6 @@ def spatial_discounting_mask(config):
     gamma = config.SPATIAL_DISCOUNTING_GAMMA
     shape = [1, config.HEIGHT, config.WIDTH, 1]
     if config.DISCOUNTED_MASK:
-        logger.info('Use spatial discounting l1 loss.')
         mask_values = np.ones((config.HEIGHT, config.WIDTH))
         for i in range(config.HEIGHT):
             for j in range(config.WIDTH):

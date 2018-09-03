@@ -1,15 +1,10 @@
-
-import numpy as np
 from video import *
-from mrcnn import utils
-import mrcnn.model as modellib
-from mrcnn import coco
+from segmentation.mrcnn import utils, coco
+from segmentation import mrcnn as modellib
 import shutil
 import scipy.misc as misc
 import argparse
 import warnings
-from inpaint import *
-
 
 warnings.filterwarnings('ignore')
 

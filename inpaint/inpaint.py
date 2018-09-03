@@ -6,7 +6,6 @@ from inpaint.inpaint_model import InpaintCAModel
 
 
 def generative_inpaint(image, mask, checkpoint):
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     model = InpaintCAModel()
     h, w, _ = image.shape
     grid = 8

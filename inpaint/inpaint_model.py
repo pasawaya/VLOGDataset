@@ -1,12 +1,10 @@
 """ common model for DCGAN """
-import logging
+
 
 import tensorflow as tf
 from tensorflow.contrib.framework.python.ops import arg_scope
 
 from neuralgym.models import Model
-from neuralgym.ops.summary_ops import scalar_summary, images_summary
-from neuralgym.ops.summary_ops import gradients_summary
 from neuralgym.ops.layers import flatten, resize
 from neuralgym.ops.gan_ops import gan_wgan_loss, gradients_penalty
 from neuralgym.ops.gan_ops import random_interpolates
@@ -15,9 +13,6 @@ from inpaint.inpaint_ops import gen_conv, gen_deconv, dis_conv
 from inpaint.inpaint_ops import random_bbox, bbox2mask, local_patch
 from inpaint.inpaint_ops import spatial_discounting_mask
 from inpaint.inpaint_ops import resize_mask_like, contextual_attention
-
-
-logger = logging.getLogger()
 
 
 class InpaintCAModel(Model):
@@ -139,8 +134,7 @@ class InpaintCAModel(Model):
             dout_global = tf.layers.dense(dglobal, 1, name='dout_global_fc')
             return dout_local, dout_global
 
-    def build_graph_with_losses(self, batch_data, config, training=True,
-                                summary=False, reuse=False):
+    def build_graph_with_losses(self, batch_data, config, training=True, reuse=False):
         batch_pos = batch_data / 127.5 - 1.
         # generate mask, 1 represents masked point
         bbox = random_bbox(config)
@@ -151,10 +145,8 @@ class InpaintCAModel(Model):
             padding=config.PADDING)
         if config.PRETRAIN_COARSE_NETWORK:
             batch_predicted = x1
-            logger.info('Set batch_predicted to x1.')
         else:
             batch_predicted = x2
-            logger.info('Set batch_predicted to x2.')
         losses = {}
         # apply mask and complete image
         batch_complete = batch_predicted*mask + batch_incomplete*(1.-mask)
@@ -173,17 +165,6 @@ class InpaintCAModel(Model):
         if not config.PRETRAIN_COARSE_NETWORK:
             losses['ae_loss'] += tf.reduce_mean(tf.abs(batch_pos - x2) * (1.-mask))
         losses['ae_loss'] /= tf.reduce_mean(1.-mask)
-        if summary:
-            scalar_summary('losses/l1_loss', losses['l1_loss'])
-            scalar_summary('losses/ae_loss', losses['ae_loss'])
-            viz_img = [batch_pos, batch_incomplete, batch_complete]
-            if offset_flow is not None:
-                viz_img.append(
-                    resize(offset_flow, scale=4,
-                           func=tf.image.resize_nearest_neighbor))
-            images_summary(
-                tf.concat(viz_img, axis=2),
-                'raw_incomplete_predicted_complete', config.VIZ_MAX_OUT)
 
         # gan
         batch_pos_neg = tf.concat([batch_pos, batch_complete], axis=0)
@@ -212,35 +193,14 @@ class InpaintCAModel(Model):
             penalty_global = gradients_penalty(interpolates_global, dout_global, mask=mask)
             losses['gp_loss'] = config.WGAN_GP_LAMBDA * (penalty_local + penalty_global)
             losses['d_loss'] = losses['d_loss'] + losses['gp_loss']
-            if summary and not config.PRETRAIN_COARSE_NETWORK:
-                gradients_summary(g_loss_local, batch_predicted, name='g_loss_local')
-                gradients_summary(g_loss_global, batch_predicted, name='g_loss_global')
-                scalar_summary('convergence/d_loss', losses['d_loss'])
-                scalar_summary('convergence/local_d_loss', d_loss_local)
-                scalar_summary('convergence/global_d_loss', d_loss_global)
-                scalar_summary('gan_wgan_loss/gp_loss', losses['gp_loss'])
-                scalar_summary('gan_wgan_loss/gp_penalty_local', penalty_local)
-                scalar_summary('gan_wgan_loss/gp_penalty_global', penalty_global)
 
-        if summary and not config.PRETRAIN_COARSE_NETWORK:
-            # summary the magnitude of gradients from different losses w.r.t. predicted image
-            gradients_summary(losses['g_loss'], batch_predicted, name='g_loss')
-            gradients_summary(losses['g_loss'], x1, name='g_loss_to_x1')
-            gradients_summary(losses['g_loss'], x2, name='g_loss_to_x2')
-            gradients_summary(losses['l1_loss'], x1, name='l1_loss_to_x1')
-            gradients_summary(losses['l1_loss'], x2, name='l1_loss_to_x2')
-            gradients_summary(losses['ae_loss'], x1, name='ae_loss_to_x1')
-            gradients_summary(losses['ae_loss'], x2, name='ae_loss_to_x2')
         if config.PRETRAIN_COARSE_NETWORK:
             losses['g_loss'] = 0
         else:
             losses['g_loss'] = config.GAN_LOSS_ALPHA * losses['g_loss']
         losses['g_loss'] += config.L1_LOSS_ALPHA * losses['l1_loss']
-        logger.info('Set L1_LOSS_ALPHA to %f' % config.L1_LOSS_ALPHA)
-        logger.info('Set GAN_LOSS_ALPHA to %f' % config.GAN_LOSS_ALPHA)
         if config.AE_LOSS:
             losses['g_loss'] += config.AE_LOSS_ALPHA * losses['ae_loss']
-            logger.info('Set AE_LOSS_ALPHA to %f' % config.AE_LOSS_ALPHA)
         g_vars = tf.get_collection(
             tf.GraphKeys.TRAINABLE_VARIABLES, 'inpaint_net')
         d_vars = tf.get_collection(
@@ -264,10 +224,8 @@ class InpaintCAModel(Model):
             training=False, padding=config.PADDING)
         if config.PRETRAIN_COARSE_NETWORK:
             batch_predicted = x1
-            logger.info('Set batch_predicted to x1.')
         else:
             batch_predicted = x2
-            logger.info('Set batch_predicted to x2.')
         # apply mask and reconstruct
         batch_complete = batch_predicted*mask + batch_incomplete*(1.-mask)
         # global image visualization
@@ -276,9 +234,6 @@ class InpaintCAModel(Model):
             viz_img.append(
                 resize(offset_flow, scale=4,
                        func=tf.image.resize_nearest_neighbor))
-        images_summary(
-            tf.concat(viz_img, axis=2),
-            name+'_raw_incomplete_complete', config.VIZ_MAX_OUT)
         return batch_complete
 
     def build_static_infer_graph(self, batch_data, config, name):

@@ -2,9 +2,24 @@
 from video import *
 
 
+class DirectoryDataset:
+    def __init__(self, directory, video_type='mp4', fps=None):
+        self.fps = fps
+        self.video_paths = [os.path.join(directory, name)for name in os.listdir(directory) if video_type in name]
+
+    def __len__(self):
+        return len(self.video_paths)
+
+    def __getitem__(self, idx):
+        video = Video(self.video_paths[idx])
+        if video is None:
+            raise RuntimeError('Could not load video at path ' + self.video_paths[idx] + '.')
+
+        return video.load_frames(fps=self.fps)
+
+
 class VLOGDataset:
-    def __init__(self, labels=None, download_dir='temp', verbose=True, fps=None):
-        self.verbose = verbose
+    def __init__(self, labels=None, download_dir='temp', fps=None):
         self.fps = fps
         self.download_dir = download_dir
         if not os.path.exists(self.download_dir):
@@ -14,11 +29,11 @@ class VLOGDataset:
         if labels is not None:
             objects = [self.object_labels().index(label) for label in labels]
 
-        annotations = np.load('meta/hand_object/hand_object.npy')
+        annotations = np.load('vlog_meta/hand_object.npy')
         indices = [np.where(annotations[:, obj] == 1)[0] for obj in objects]
         indices = np.unique(np.hstack(indices))
 
-        links = open('meta/youtube_links.txt', 'r')
+        links = open('vlog_meta/youtube_links.txt', 'r')
         self.entries = [link for i, link in enumerate(links) if i in indices]
         links.close()
 
@@ -31,24 +46,19 @@ class VLOGDataset:
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
-        if self.verbose:
-            print('Downloading video ' + str(idx) + '...')
+        print('Downloading video ' + str(idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
         if video is None:
             raise RuntimeError('Could not download video from Youtube.')
 
-        if self.verbose:
-            print('Trimming video ' + str(idx) + '...')
-
-        return video.load_frames(start, stop, fps=self.fps)
+        frames = video.load_frames(start=start, stop=stop, fps=self.fps)
+        video.remove_file()
+        return frames
 
     @staticmethod
     def object_labels():
-        file = open('meta/hand_object/hand_object_labels.txt', 'r')
+        file = open('vlog_meta/hand_object_labels.txt', 'r')
         labels = [line.strip() for line in file.readlines()]
         file.close()
         return labels
-
-
-vlog = VLOGDataset()
