@@ -1,0 +1,3 @@
+[submodule "taskonomy"]
+	path = taskonomy
+	url = https://github.com/StanfordVL/taskonomy.git
