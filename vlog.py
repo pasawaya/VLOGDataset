@@ -1,19 +1,15 @@
 
-from scipy.misc import imsave
-
 from dataset import *
 from segmentation import MaskRCNN
-from tqdm import tqdm
 from os_utils import *
 from normals import *
 from inpaint import generative_inpaint
-import skimage
 
-import numpy as np
-import cv2
 import os
+import cv2
 import argparse
-from subprocess import call, DEVNULL
+import numpy as np
+from tqdm import tqdm
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_dir',
