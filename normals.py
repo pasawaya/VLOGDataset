@@ -7,10 +7,10 @@ from subprocess import call, DEVNULL
 
 
 def surface_normals(image):
-    temp_dir = 'normals_temp'
+    temp_dir = os.path.join(os.getcwd(), 'normals_temp')
     safe_makedirs(temp_dir)
-    image_path = os.path.join(os.getcwd(), temp_dir, 'temp_image.png')
-    normals_path = os.path.join(os.getcwd(), temp_dir, 'temp_normals.png')
+    image_path = os.path.join(temp_dir, 'temp_image.png')
+    normals_path = os.path.join(temp_dir, 'temp_normals.png')
 
     # Run Taskonomy command on temporarily saved image
     imsave(image_path, image)
