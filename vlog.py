@@ -78,11 +78,6 @@ for video_id in range(len(dataset)):
                 area_ratio = area / total_area
 
                 if score >= args.confidence_threshold and area_ratio <= args.area_threshold:
-                    inpainted_path = os.path.join(inpainted_subdir, str(current) + '.png')
-                    mask_path = os.path.join(masks_subdir, str(current) + '.png')
-                    frame_path = os.path.join(frames_subdir, str(current) + '.png')
-                    sf_path = os.path.join(sf_subdir, str(current) + '.png')
-
                     dilated_mask = cv2.dilate(mask, np.ones((9, 9)), iterations=2)
                     inpainted = generative_inpaint(frame, dilated_mask, args.inpaint_model_dir)
                     sf = surface_normals(cv2.resize(inpainted, (256, 256)))
@@ -92,10 +87,10 @@ for video_id in range(len(dataset)):
                     original = cv2.resize(original, (args.w, args.h))
                     sf = cv2.resize(sf, (args.w, args.h))
 
-                    imsave(inpainted_path, inpainted)
-                    imsave(mask_path, mask)
-                    imsave(frame_path, original)
-                    imsave(sf_path, sf)
+                    imsave(os.path.join(inpainted_subdir, str(current) + '.png'), inpainted)
+                    imsave(os.path.join(masks_subdir, str(current) + '.png'), mask)
+                    imsave(os.path.join(frames_subdir, str(current) + '.png'), original)
+                    imsave(os.path.join(sf_subdir, str(current) + '.png'), sf)
 
                     current += 1
             t.update()
