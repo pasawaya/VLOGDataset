@@ -5,7 +5,10 @@ import tensorflow as tf
 from inpaint.inpaint_model import InpaintCAModel
 
 
-def generative_inpaint(image, mask, checkpoint):
+def generative_inpaint(image, mask, checkpoint, dilate=True):
+    if dilate:
+        mask = cv2.dilate(mask, np.ones((9, 9)), iterations=2)
+
     model = InpaintCAModel()
     h, w, _ = image.shape
     grid = 8
