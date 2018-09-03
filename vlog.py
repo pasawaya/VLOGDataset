@@ -5,6 +5,7 @@ from dataset import *
 from segmentation import MaskRCNN
 from tqdm import tqdm
 from os_utils import *
+from normals import *
 from inpaint import generative_inpaint
 import skimage
 
@@ -55,11 +56,7 @@ inpainted_subdir = os.path.join(output_dir, 'inpainted')
 masks_subdir = os.path.join(output_dir, 'masks')
 sf_subdir = os.path.join(output_dir, 'surface_normals')
 
-safe_makedirs(output_dir)
-safe_makedirs(frames_subdir)
-safe_makedirs(inpainted_subdir)
-safe_makedirs(masks_subdir)
-safe_makedirs(sf_subdir)
+safe_makedirs([output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
 
 # dataset = VLOGDataset(fps=args.fps)
 dataset = DirectoryDataset(args.input_dir, fps=args.fps)
@@ -88,21 +85,7 @@ for video_id in range(len(dataset)):
 
                     dilated_mask = cv2.dilate(mask, np.ones((9, 9)), iterations=2)
                     inpainted = generative_inpaint(frame, dilated_mask, args.inpaint_model_dir)
-
-                    inpainted = cv2.resize(inpainted, (256, 256))
-                    original = cv2.resize(frame, (256, 256))
-                    mask = cv2.resize(mask, (256, 256))
-
-                    imsave(inpainted_path, inpainted)
-                    sf_cmd = 'python taskonomy/taskbank/tools/run_img_task.py --task rgb2sfnorm ' \
-                             '--img ' + inpainted_path + ' --store ' + sf_path
-
-                    call(sf_cmd, shell=True, stdout=DEVNULL, stderr=DEVNULL)
-                    os.remove(inpainted_path)
-
-                    sf = cv2.imread(sf_path)
-                    sf = cv2.cvtColor(sf, cv2.COLOR_BGR2RGB)
-                    os.remove(sf_path)
+                    sf = surface_normals(cv2.resize(inpainted, (256, 256)))
 
                     inpainted = cv2.resize(inpainted, (args.w, args.h))
                     mask = cv2.resize(mask, (args.w, args.h))
