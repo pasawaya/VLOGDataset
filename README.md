@@ -29,20 +29,22 @@
 
 ## Usage
 
+Download and process VLOG dataset at 4 fps and resize results to 320 x 240: 
 ```
-# Download all videos on a single GPU with default confidence and area thresholds
-python main.py
-
-# Download all videos on 8 GPUs with batch sizes of 16
-python main.py --gpu_count=8 --images_per_gpu=16
-
-# Download the first 100 videos, then download the next 100 at some later point
-python main.py --n_videos=100
-...
-python main.py --start_video_id=100 -n_videos=100
-
-# Download all videos and save only high confidence detections regardless of size
-python main.py --confidence_threshold=0.95 --area_threshold=1.0
+python vlog.py --w=320 --h=240 --fps=4
 ```
+
+Download and process VLOG dataset and only save high confidence detections regardless of object size:
+
+```
+python vlog.py --confidence_threshold=0.95 --area_threshold=1.0
+```
+
+Process videos in local directory:
+
+```
+python vlog.py --input_dir=/path/to/videos
+```
+
 
 ## Examples 
