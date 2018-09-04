@@ -10,6 +10,7 @@ import cv2
 import argparse
 import numpy as np
 from tqdm import tqdm
+from scipy.misc import imsave
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_dir',
