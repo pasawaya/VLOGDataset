@@ -1,9 +1,9 @@
 
-from dataset import *
-from segmentation import MaskRCNN
-from os_utils import *
-from normals import *
+from os_utils import safe_makedirs
+from normals import surface_normals
 from inpaint import generative_inpaint
+from segmentation import MaskRCNN
+from dataset import DirectoryDataset, VLOGDataset
 
 import os
 import cv2
@@ -56,8 +56,11 @@ sf_subdir = os.path.join(output_dir, 'surface_normals')
 
 safe_makedirs([output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
 
-# dataset = VLOGDataset(fps=args.fps)
-dataset = DirectoryDataset(args.input_dir, fps=args.fps)
+if args.input_dir is not None:
+    dataset = DirectoryDataset(args.input_dir, fps=args.fps)
+else:
+    dataset = VLOGDataset(fps=args.fps)
+
 detector = MaskRCNN(classes=['bottle', 'cup', 'bowl', 'wine glass'])
 
 current = 0
