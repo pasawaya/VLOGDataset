@@ -23,7 +23,7 @@
     ```bash
     sh setup.sh
     ``` 
-4. Download the in-painting model from [here](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` 
+4. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) from and place it in ``inpaint/model_logs`` 
 
 
 
