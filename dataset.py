@@ -14,8 +14,7 @@ class DirectoryDataset:
         video = Video(self.video_paths[idx])
         if video is None:
             raise RuntimeError('Could not load video at path ' + self.video_paths[idx] + '.')
-
-        return video.load_frames(fps=self.fps)
+        return video.load_frames(fps=self.fps, delete=False)
 
 
 class VLOGDataset:
@@ -51,10 +50,7 @@ class VLOGDataset:
 
         if video is None:
             raise RuntimeError('Could not download video from Youtube.')
-
-        frames = video.load_frames(start=start, stop=stop, fps=self.fps)
-        video.remove_file()
-        return frames
+        return video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
 
     @staticmethod
     def object_labels():

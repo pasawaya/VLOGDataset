@@ -16,7 +16,7 @@ class Video:
         self.fps = int(cap.get(cv2.CAP_PROP_FPS))
         cap.release()
 
-    def load_frames(self, start=0, stop=None, fps=None):
+    def load_frames(self, start=0, stop=None, fps=None, delete=False):
         if stop is None:
             stop = self.n_frames - 1
 
@@ -37,10 +37,10 @@ class Video:
             frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
         cap.release()
-        return frames
 
-    def remove_file(self):
-        os.remove(self.name)
+        if delete:
+            os.remove(self.name)
+        return frames
 
 
 class YoutubeDownloader:
