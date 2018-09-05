@@ -1,5 +1,5 @@
 
-from os_utils import safe_makedirs
+from os_utils import safe_makedirs, del_dirs
 from normals import surface_normals
 from inpaint import generative_inpaint
 from segmentation import MaskRCNN
@@ -64,10 +64,11 @@ sf_subdir = os.path.join(args.output_dir, 'surface_normals')
 
 safe_makedirs([args.output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
 
+download_dir = 'temp'
 if args.input_dir is not None:
     dataset = DirectoryDataset(args.input_dir, fps=args.fps)
 else:
-    dataset = VLOGDataset(fps=args.fps)
+    dataset = VLOGDataset(fps=args.fps, download_dir=download_dir)
 
 detector = MaskRCNN(classes=['bottle', 'cup', 'bowl', 'wine glass'])
 
@@ -99,3 +100,4 @@ for video_id in range(start, stop):
 
                     current += 1
             t.update()
+del_dirs(download_dir)
