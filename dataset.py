@@ -1,5 +1,6 @@
 
 from video import *
+from os_utils import safe_makedirs, del_dirs
 
 
 class DirectoryDataset:
@@ -21,8 +22,6 @@ class VLOGDataset:
     def __init__(self, labels=None, download_dir='temp', fps=None):
         self.fps = fps
         self.download_dir = download_dir
-        if not os.path.exists(self.download_dir):
-            os.makedirs(download_dir)
 
         objects = list(range(len(self.object_labels())))
         if labels is not None:
@@ -42,6 +41,7 @@ class VLOGDataset:
         return len(self.entries)
 
     def __getitem__(self, idx):
+        safe_makedirs(self.download_dir)
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
@@ -50,6 +50,7 @@ class VLOGDataset:
 
         if video is None:
             raise RuntimeError('Could not download video from Youtube.')
+        del_dirs(self.download_dir)
         return video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
 
     @staticmethod
