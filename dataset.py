@@ -46,7 +46,7 @@ class VLOGDataset:
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
-        print('Downloading video ' + str(idx) + '...')
+        print('\nDownloading video ' + str(idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
         if video is None:
