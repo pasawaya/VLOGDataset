@@ -34,7 +34,7 @@ def main(args):
     current = 0
 
     start = args.start_video_id
-    stop = len(dataset) if args.n is None else min(start + args.n, len(dataset))
+    stop = len(dataset) - start if args.n is None else min(start + args.n, len(dataset))
     for video_id in range(start, stop):
         frames = dataset[video_id]
 
