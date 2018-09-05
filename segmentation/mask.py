@@ -23,16 +23,11 @@ class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
                'teddy bear', 'hair drier', 'toothbrush']
 
 
-class InferenceConfig(coco.CocoConfig):
-    GPU_COUNT = 1
-    IMAGES_PER_GPU = 1
-
-
 class MaskRCNN:
-    static_model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
-    static_model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
+    def __init__(self, classes=class_names, n_gpus=1):
+        class InferenceConfig(coco.CocoConfig):
+            GPU_COUNT = n_gpus
 
-    def __init__(self, classes=class_names):
         self.model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
         self.model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
         self.classes = [class_names.index(name) for name in classes]
