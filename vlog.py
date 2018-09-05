@@ -57,13 +57,12 @@ args = parser.parse_args()
 
 w, h = args.w, args.h
 
-output_dir = args.output_dir
-frames_subdir = os.path.join(output_dir, 'frames')
-inpainted_subdir = os.path.join(output_dir, 'inpainted')
-masks_subdir = os.path.join(output_dir, 'masks')
-sf_subdir = os.path.join(output_dir, 'surface_normals')
+frames_subdir = os.path.join(args.output_dir, 'frames')
+inpainted_subdir = os.path.join(args.output_dir, 'inpainted')
+masks_subdir = os.path.join(args.output_dir, 'masks')
+sf_subdir = os.path.join(args.output_dir, 'surface_normals')
 
-safe_makedirs([output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
+safe_makedirs([args.output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
 
 if args.input_dir is not None:
     dataset = DirectoryDataset(args.input_dir, fps=args.fps)
