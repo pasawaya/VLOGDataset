@@ -29,8 +29,7 @@ def main(args):
     else:
         dataset = VLOGDataset(fps=args.fps, download_dir=download_dir)
 
-    detector = MaskRCNN(classes=['bottle', 'cup', 'bowl', 'wine glass'])
-
+    detector = MaskRCNN(classes=args.classes)
     current = 0
 
     start = args.start_video_id
@@ -64,6 +63,11 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('--classes',
+                        default=['bottle', 'cup', 'bowl', 'wine glass'],
+                        nargs='+',
+                        type=str,
+                        help='Object classes to detect, remove, and in-paint.')
     parser.add_argument('--input_dir',
                         default=None,
                         type=str,
