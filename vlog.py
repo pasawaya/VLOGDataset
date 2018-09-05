@@ -79,7 +79,7 @@ stop = len(dataset) if args.n is None else min(start + args.n, len(dataset))
 for video_id in range(start, stop):
     frames = dataset[video_id]
 
-    print('\nProcessing video ' + str(video_id) + '...')
+    print('Processing video ' + str(video_id) + '...')
     with tqdm(total=len(frames)) as t:
         for frame in frames:
             scores, masks = detector.detect(frame)
