@@ -45,6 +45,14 @@ parser.add_argument('--inpaint_model_dir',
                     default='inpaint/model_logs',
                     type=str,
                     help='Directory containing generative in-painting model.')
+parser.add_argument('--start_video_id',
+                    default=0,
+                    type=int,
+                    help='The index of the first video to download.')
+parser.add_argument('--n',
+                    default=None,
+                    type=int,
+                    help='Number of videos to download.')
 args = parser.parse_args()
 
 w, h = args.w, args.h
@@ -66,7 +74,9 @@ detector = MaskRCNN(classes=['bottle', 'cup', 'bowl', 'wine glass'])
 
 current = 0
 
-for video_id in range(len(dataset)):
+start = args.start_video_id
+stop = len(dataset) if args.n is None else min(start + args.n, len(dataset))
+for video_id in range(start, stop):
     frames = dataset[video_id]
 
     print('\nProcessing video ' + str(video_id) + '...')
