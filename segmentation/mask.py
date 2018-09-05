@@ -27,6 +27,7 @@ class MaskRCNN:
     def __init__(self, classes=class_names, n_gpus=1):
         class InferenceConfig(coco.CocoConfig):
             GPU_COUNT = n_gpus
+            IMAGES_PER_GPU = 1
 
         self.model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
         self.model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
