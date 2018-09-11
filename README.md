@@ -4,7 +4,7 @@
 
 ## Features
 1. Downloads clips from the [VLOG Dataset](https://people.eecs.berkeley.edu/~dfouhey/2017/VLOG/) containing desired object classes.
-2. [Segments](https://github.com/matterport/Mask_RCNN)) and removes the objects from the frame.
+2. [Segments](https://github.com/matterport/Mask_RCNN) and removes the objects from the frame.
 3. [In-paints](https://github.com/JiahuiYu/generative_inpainting) the removed region.
 4. Computes [surface normals](https://github.com/StanfordVL/taskonomy/tree/master/taskbank for the new frame without the objects.
 
