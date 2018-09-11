@@ -3,10 +3,10 @@
 -----------------
 
 ## Features
-1. Downloads clips from the [VLOG Dataset](https://people.eecs.berkeley.edu/~dfouhey/2017/VLOG/) that contain specified objects.
-2. Runs [Mask R-CNN](https://github.com/matterport/Mask_RCNN) to segment the specified objects from the frame.
+1. Downloads clips from the [VLOG Dataset](https://people.eecs.berkeley.edu/~dfouhey/2017/VLOG/) containing desired object classes.
+2. Segments the objects using [Mask R-CNN](https://github.com/matterport/Mask_RCNN).
 3. Removes the objects from the frame and [in-paints](https://github.com/JiahuiYu/generative_inpainting) the removed region.
-3. Saves the original frames, in-painted frames, and object masks.
+4. Computes surface normals for the new frame without the objects.
 
 
 ## Installation
