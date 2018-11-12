@@ -49,4 +49,4 @@ python vlog.py --input_dir=/path/to/videos
 
 ## Demo
 
-[![Demo](preview.gif)](https://www.youtube.com/watch?v=MbnnfXC0tBE&feature=youtu.be)
+[![Demo](demo.gif)](https://www.youtube.com/watch?v=MbnnfXC0tBE&feature=youtu.be)
