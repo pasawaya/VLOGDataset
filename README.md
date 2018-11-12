@@ -2,6 +2,8 @@
 
 -----------------
 
+[![Demo](demo.gif)](https://www.youtube.com/watch?v=MbnnfXC0tBE&feature=youtu.be)
+
 ## Features
 1. Downloads clips from the [VLOG Dataset](https://people.eecs.berkeley.edu/~dfouhey/2017/VLOG/) containing desired object classes.
 2. [Segments](https://github.com/matterport/Mask_RCNN) and removes the objects from the frame.
@@ -45,8 +47,3 @@ Process videos in local directory:
 ```
 python vlog.py --input_dir=/path/to/videos
 ```
-
-
-## Demo
-
-[![Demo](demo.gif)](https://www.youtube.com/watch?v=MbnnfXC0tBE&feature=youtu.be)
