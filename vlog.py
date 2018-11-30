@@ -10,6 +10,7 @@ import cv2
 import argparse
 import numpy as np
 from tqdm import tqdm
+from utils import resize_pad
 from scipy.misc import imsave
 
 
@@ -51,10 +52,10 @@ def main(args):
                         inpainted = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
                         sf = surface_normals(cv2.resize(inpainted, (256, 256)))
 
-                        imsave(os.path.join(inpainted_subdir, str(current) + '.png'), cv2.resize(inpainted, (w, h)))
-                        imsave(os.path.join(masks_subdir, str(current) + '.png'), cv2.resize(mask, (w, h)))
-                        imsave(os.path.join(frames_subdir, str(current) + '.png'), cv2.resize(frame, (w, h)))
-                        imsave(os.path.join(sf_subdir, str(current) + '.png'), cv2.resize(sf, (w, h)))
+                        imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
+                        imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))
+                        imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
+                        imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
 
                         current += 1
                 t.update()
