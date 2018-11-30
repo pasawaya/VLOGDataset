@@ -14,7 +14,7 @@
 ## Installation
 1. Clone the repository
    ```bash
-   git clone --recursive https://github.com/pasawaya/VLOGDataset.git
+   git clone --recursive https://github.com/pasawaya/VLOGDataset.git; cd VLOGDataset/
    ```
 
 2. Install the dependencies
