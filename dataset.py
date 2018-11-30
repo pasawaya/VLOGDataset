@@ -13,7 +13,7 @@ class DirectoryDataset:
 
     def __getitem__(self, idx):
         video = Video(self.video_paths[idx])
-        if video is None:
+        if not video:
             raise RuntimeError('Could not load video at path ' + self.video_paths[idx] + '.')
         return video.load_frames(fps=self.fps, delete=False)
 
@@ -48,7 +48,7 @@ class VLOGDataset:
         print('\nDownloading video ' + str(idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
-        if video is None:
+        if not video:
             raise RuntimeError('Could not download video from Youtube.')
         return video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
 
