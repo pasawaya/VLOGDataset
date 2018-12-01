@@ -11,8 +11,6 @@ def resize_pad(image, new_shape, fill=0):
     else:
         h, w, c = image.shape
 
-
-
     f_xy = min(new_w / w, new_h / h)
     h, w = int(h * f_xy), int(w * f_xy)
     scaled = scale(image, (h, w))
