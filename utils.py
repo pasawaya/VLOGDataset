@@ -4,11 +4,14 @@ from skimage.transform import resize
 
 
 def resize_pad(image, new_shape, fill=0):
+    new_h, new_w = new_shape
+
     if len(image.shape) == 2:
         h, w = image.shape
     else:
         h, w, c = image.shape
-    new_w, new_h = new_shape
+
+
 
     f_xy = min(new_w / w, new_h / h)
     h, w = int(h * f_xy), int(w * f_xy)
