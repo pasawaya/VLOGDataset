@@ -4,22 +4,33 @@ from skimage.transform import resize
 
 
 def resize_pad(image, new_shape, fill=0):
-    h, w, c = image.shape
+    if len(image.shape) == 2:
+        h, w = image.shape
+    else:
+        h, w, c = image.shape
     new_w, new_h = new_shape
 
-    scaled = scale(image, min(new_w / w, new_h / h))
-    output = np.ones((new_h, new_w, c)) * fill
+    f_xy = min(new_w / w, new_h / h)
+    h, w = int(h * f_xy), int(w * f_xy)
+    scaled = scale(image, (h, w))
 
-    scaled_h, scaled_w, _ = scaled.shape
+    if len(scaled.shape) == 3:
+        scaled_h, scaled_w, _ = scaled.shape
+    else:
+        scaled_h, scaled_w = scaled.shape
     dw, dh = new_w - scaled_w, new_h - scaled_h
-    x, y = np.floor(dw / 2), np.floor(dh / 2)
+    x, y = int(np.floor(dw / 2)), int(np.floor(dh / 2))
 
-    output[x:x+scaled_h, y:y+scaled_w, :] = scaled
+    if len(image.shape) == 3:
+        output = np.ones((new_h, new_w, c)) * fill
+        output[y:y + scaled_h, x:x + scaled_w, :] = scaled
+    else:
+        output = np.ones((new_h, new_w)) * fill
+        output[y:y + scaled_h, x:x + scaled_w] = scaled
+
     return output
 
 
-def scale(image, f_xy):
-    h, w, _ = image.shape
-    h, w = int(h * f_xy), int(w * f_xy)
-    image = resize(image, (h, w), preserve_range=True, anti_aliasing=True, mode='constant').astype(np.uint8)
+def scale(image, shape):
+    image = resize(image, shape, preserve_range=True, anti_aliasing=True, mode='constant').astype(np.uint8)
     return image
