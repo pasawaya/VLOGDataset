@@ -20,6 +20,8 @@
 2. Install the dependencies
    ```bash
    pip install -r requirements.txt
+   
+   pip install git+https://github.com/JiahuiYu/neuralgym
    ```
 3. Run the setup script from the root directory
     ```bash
