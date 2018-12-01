@@ -12,7 +12,7 @@ mkdir -p "$CURRDIR/taskonomy/taskbank/temp/$TASK"
 for s in $SUBFIX; do
     echo "Downloading ${TASK} model.${s}"
     wget "https://s3-us-west-2.amazonaws.com/taskonomy-unpacked-oregon/\
-model_log_final/${TASK}/logs/model.permanent-ckpt.${s}" -P $CURRDIR/taskonomy/taskbank/temp/${TASK}
+model_log_final/${TASK}/logs/model.permanent-ckpt.${s}" -P "$CURRDIR/taskonomy/taskbank/temp/${TASK}"
 done
 
 # 2. Create directory to contain generative in-painting model
