@@ -14,7 +14,7 @@
 ## Installation
 1. Clone the repository
    ```bash
-   git clone --recursive https://github.com/pasawaya/VLOGDataset.git
+   git clone --recursive https://github.com/pasawaya/VLOGDataset.git; cd VLOGDataset/
    ```
 
 2. Install the dependencies
@@ -25,7 +25,7 @@
     ```bash
     sh setup.sh
     ``` 
-4. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) from and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
+4. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
 
 
 
