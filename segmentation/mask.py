@@ -51,6 +51,10 @@ class MaskRCNN:
                 scores.append(boxes[0, 0, i, 2])
 
         scores = np.array(scores)
-        cleaned_masks = np.dstack(cleaned_masks) if cleaned_masks else np.array([])
-        cleaned_masks = (np.moveaxis(cleaned_masks, 2, 0) * 255).astype(np.uint8)
+
+        if cleaned_masks:
+            cleaned_masks = np.dstack(cleaned_masks)
+            cleaned_masks = (np.moveaxis(cleaned_masks, 2, 0) * 255).astype(np.uint8)
+        else:
+            cleaned_masks = np.array([])
         return scores, cleaned_masks
