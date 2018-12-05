@@ -40,6 +40,7 @@ class MaskRCNN:
             mask = (mask > mask_threshold)
             cleaned_masks.append(mask)
 
+        scores = np.array(scores)
         cleaned_masks = np.array(cleaned_masks)
         print(scores.shape)
         print(cleaned_masks.shape)
