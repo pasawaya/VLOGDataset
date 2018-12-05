@@ -46,10 +46,7 @@ class MaskRCNN:
                 mask = (mask > mask_threshold)
 
                 mask_container = np.zeros((h, w), dtype=np.uint8)
-                print(mask_container.shape)
-                print(mask.shape)
                 mask_container[y_start:y_end, x_start:x_end] = mask
-                print('\t' + str(mask_container.shape))
                 cleaned_masks.append(mask)
                 scores.append(boxes[0, 0, i, 2])
 
