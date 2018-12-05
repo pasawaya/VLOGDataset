@@ -51,20 +51,6 @@ class MaskRCNN:
                 scores.append(boxes[0, 0, i, 2])
 
         scores = np.array(scores)
-        print(cleaned_masks[0].shape)
         cleaned_masks = np.dstack(cleaned_masks)
-        print(cleaned_masks.shape)
         cleaned_masks = (np.moveaxis(cleaned_masks, 2, 0) * 255).astype(np.uint8)
-        print(cleaned_masks.shape)
-        print(scores.shape)
-        print('\n')
-        return np.array(scores), np.array(cleaned_masks)
-        # result = self.model.detect([image])[0]
-        # classes = result['class_ids']
-        # matches = [i for i, class_id in enumerate(classes) if class_id in self.classes]
-        #
-        # scores = result['scores'][matches]
-        # masks = result['masks'][:, :, matches]
-        # masks = np.moveaxis(masks, 2, 0) * 255
-        # return scores, masks.astype(np.uint8)
-
+        return scores, cleaned_masks
