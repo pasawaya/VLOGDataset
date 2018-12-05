@@ -19,7 +19,7 @@ class DirectoryDataset:
 
 
 class VLOGDataset:
-    def __init__(self, labels=None, download_dir='temp', fps=None):
+    def __init__(self, labels=None, download_dir='temp', fps=None, start=None, n=None):
         self.fps = fps
         self.download_dir = download_dir
         safe_makedirs(self.download_dir)
@@ -37,6 +37,11 @@ class VLOGDataset:
         links.close()
 
         self.downloader = YoutubeDownloader('mp4')
+
+        # Keep only entries in range [start, start + n]
+        start = 0 if not start else start
+        stop = len(self.entries) - start if not n else min(start + n, len(self.entries))
+        self.entries = self.entries[start:stop+1]
 
     def __len__(self):
         return len(self.entries)

@@ -25,20 +25,16 @@ def main(args):
     safe_makedirs([args.output_dir, frames_subdir, inpainted_subdir, masks_subdir, sf_subdir])
 
     download_dir = 'temp'
-    if args.input_dir is not None:
-        dataset = DirectoryDataset(args.input_dir, fps=args.fps)
+    if not args.input_dir:
+        dataset = VLOGDataset(fps=args.fps, download_dir=download_dir, start=args.start_video_id, n=args.n)
     else:
-        dataset = VLOGDataset(fps=args.fps, download_dir=download_dir)
+        dataset = DirectoryDataset(args.input_dir, fps=args.fps)
 
     detector = MaskRCNN(classes=args.classes)
     current = 0
 
-    start = args.start_video_id
-    stop = len(dataset) - start if args.n is None else min(start + args.n, len(dataset))
-    for video_id in range(start, stop):
-        frames = dataset[video_id]
-
-        print('Processing video ' + str(video_id) + '...')
+    for i, frames in dataset:
+        print('Processing video ' + str(i) + '...')
         with tqdm(total=len(frames)) as t:
             for frame in frames:
                 scores, masks = detector.detect(frame)
