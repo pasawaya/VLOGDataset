@@ -16,7 +16,7 @@ class MaskRCNN:
         self.classes = [coco_classes.index(name) for name in classes]
 
     # TODO: load model once in init
-    def detect(self, image, mask_threshold=1):
+    def detect(self, image, mask_threshold=0.3):
         textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
         modelWeights = "segmentation/model/frozen_inference_graph.pb"
 
