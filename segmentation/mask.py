@@ -11,8 +11,8 @@ class MaskRCNN:
         coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
 
         if not classes:
-            self.classes = coco_classes
-        self.classes = [coco_classes.index(name) for name in self.classes]
+            classes = coco_classes
+        self.classes = [coco_classes.index(name) for name in classes]
 
     def detect(self, image):
         textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
