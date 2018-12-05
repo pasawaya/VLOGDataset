@@ -19,7 +19,7 @@ class DirectoryDataset:
 
 
 class VLOGDataset:
-    def __init__(self, labels=None, download_dir='temp', fps=None):
+    def __init__(self, labels=None, download_dir='temp', fps=None, start=None, n=None):
         self.fps = fps
         self.download_dir = download_dir
         safe_makedirs(self.download_dir)
@@ -38,6 +38,11 @@ class VLOGDataset:
 
         self.downloader = YoutubeDownloader('mp4')
 
+        # Keep only entries in range [start, start + n]
+        self.start = 0 if not start else start
+        self.stop = len(self.entries) - self.start if not n else min(self.start + n, len(self.entries))
+        self.entries = self.entries[self.start:self.stop+1]
+
     def __len__(self):
         return len(self.entries)
 
@@ -45,12 +50,12 @@ class VLOGDataset:
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
-        print('\nDownloading video ' + str(idx) + '...')
+        print('\nDownloading video ' + str(self.start + idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
         if not video:
             raise RuntimeError('Could not download video from Youtube.')
-        return video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
+        return self.start + idx, video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
 
     @staticmethod
     def object_labels():

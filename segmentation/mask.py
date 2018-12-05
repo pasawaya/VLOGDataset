@@ -1,48 +1,60 @@
-from segmentation.mrcnn import model as modellib
-from segmentation.mrcnn import coco
+import cv2
 import numpy as np
+
 
 # Suppress AVX, etc. warnings when running on CPU
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
-               'bus', 'train', 'truck', 'boat', 'traffic light',
-               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
-               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
-               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
-               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-               'kite', 'baseball bat', 'baseball glove', 'skateboard',
-               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
-               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
-               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
-               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
-               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
-               'teddy bear', 'hair drier', 'toothbrush']
-
 
 class MaskRCNN:
-    def __init__(self, classes=class_names, n_gpus=1):
-        class InferenceConfig(coco.CocoConfig):
-            GPU_COUNT = n_gpus
-            IMAGES_PER_GPU = 1
+    def __init__(self, classes=None):
+        # Load classes and determine indices of desired object classes
+        coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
+        if not classes:
+            classes = coco_classes
+        self.classes = [coco_classes.index(name) for name in classes]
 
-        self.model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
-        self.model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
-        self.classes = [class_names.index(name) for name in classes]
+    # TODO: load model once in init
+    def detect(self, image, mask_threshold=0.3):
+        textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
+        modelWeights = "segmentation/model/frozen_inference_graph.pb"
 
-    def detect(self, image):
-        result = self.model.detect([image])[0]
-        classes = result['class_ids']
-        matches = [i for i, class_id in enumerate(classes) if class_id in self.classes]
+        net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
+        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
+        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
-        scores = result['scores'][matches]
-        masks = result['masks'][:, :, matches]
-        masks = np.moveaxis(masks, 2, 0) * 255
+        blob = cv2.dnn.blobFromImage(image, swapRB=True, crop=False)
+        net.setInput(blob)
 
-        print(scores.shape)
-        print(masks.shape)
-        return scores, masks.astype(np.uint8)
+        boxes, masks = net.forward(['detection_out_final', 'detection_masks'])
 
+        n_objects = boxes.shape[2]
+        scores = []
+        cleaned_masks = []
+
+        h, w = image.shape[:2]
+        for i in range(n_objects):
+            class_id = int(boxes[0, 0, i, 1])
+            if class_id in self.classes:
+                box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
+                x_start, y_start, x_end, y_end = box.astype(np.int)
+                w_box, h_box = x_end - x_start, y_end - y_start
+
+                mask = masks[i, class_id]
+                mask = cv2.resize(mask, (w_box, h_box), interpolation=cv2.INTER_NEAREST)
+                mask = (mask > mask_threshold)
+
+                mask_container = np.zeros((h, w), dtype=np.uint8)
+                mask_container[y_start:y_end, x_start:x_end] = mask
+                cleaned_masks.append(mask_container)
+                scores.append(boxes[0, 0, i, 2])
+
+        scores = np.array(scores)
+
+        if cleaned_masks:
+            cleaned_masks = np.dstack(cleaned_masks)
+            cleaned_masks = (np.moveaxis(cleaned_masks, 2, 0) * 255).astype(np.uint8)
+        else:
+            cleaned_masks = np.array([])
+        return scores, cleaned_masks
