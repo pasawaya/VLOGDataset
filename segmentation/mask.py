@@ -26,18 +26,23 @@ class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
 
 
 class MaskRCNN:
-    def __init__(self, classes=class_names, n_gpus=1):
+    def __init__(self, classes=None, n_gpus=1):
         class InferenceConfig(coco.CocoConfig):
             GPU_COUNT = n_gpus
             IMAGES_PER_GPU = 1
+
+        self.class_names = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
+        print(class_names)
+        if not classes:
+            self.classes = self.class_names
 
         self.model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
         self.model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
         self.classes = [class_names.index(name) for name in classes]
 
     def detect(self, image):
-        textGraph = "segmentation/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
-        modelWeights = "segmentation/mask_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb"
+        textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
+        modelWeights = "segmentation/model/frozen_inference_graph.pb"
 
         net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
         net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
