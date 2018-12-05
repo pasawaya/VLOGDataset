@@ -33,7 +33,7 @@ def main(args):
     detector = MaskRCNN(classes=args.classes)
     current = 0
 
-    for i, frames in dataset:
+    for i, frames in enumerate(dataset):
         print('Processing video ' + str(i) + '...')
         with tqdm(total=len(frames)) as t:
             for frame in frames:
