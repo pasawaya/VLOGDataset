@@ -9,25 +9,24 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class MaskRCNN:
     def __init__(self, classes=None):
+        textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
+        modelWeights = "segmentation/model/frozen_inference_graph.pb"
+
+        self.net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
+        self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
+        self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+
         # Load classes and determine indices of desired object classes
         coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
         if not classes:
             classes = coco_classes
         self.classes = [coco_classes.index(name) for name in classes]
 
-    # TODO: load model once in init
     def detect(self, image, mask_threshold=0.3):
-        textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
-        modelWeights = "segmentation/model/frozen_inference_graph.pb"
-
-        net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
-        net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
-        net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
-
         blob = cv2.dnn.blobFromImage(image, swapRB=True, crop=False)
-        net.setInput(blob)
+        self.net.setInput(blob)
 
-        boxes, masks = net.forward(['detection_out_final', 'detection_masks'])
+        boxes, masks = self.net.forward(['detection_out_final', 'detection_masks'])
 
         n_objects = boxes.shape[2]
         scores = []
