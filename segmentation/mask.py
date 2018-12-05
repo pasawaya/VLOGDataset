@@ -32,14 +32,14 @@ class MaskRCNN:
         n_objects = boxes.shape[2]
         scores = []
         cleaned_masks = []
-        print(image.shape)
+
         h, w = image.shape[:2]
         for i in range(n_objects):
             class_id = int(boxes[0, 0, i, 1])
-            if class_id in self.classes:
+            if class_id in self.classes or True:
                 box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
                 x_start, y_start, x_end, y_end = box.astype(np.int)
-                w_box, h_box = x_end - x_start, x_end - y_end
+                w_box, h_box = x_end - x_start + 1, x_end - y_end + 1
 
                 mask = masks[i, class_id]
                 mask = cv2.resize(mask, (w_box, h_box), interpolation=cv2.INTER_NEAREST)
