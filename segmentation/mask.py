@@ -8,37 +8,20 @@ import cv2
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-class_names = ['BG', 'person', 'bicycle', 'car', 'motorcycle', 'airplane',
-               'bus', 'train', 'truck', 'boat', 'traffic light',
-               'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird',
-               'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear',
-               'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie',
-               'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball',
-               'kite', 'baseball bat', 'baseball glove', 'skateboard',
-               'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup',
-               'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple',
-               'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza',
-               'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed',
-               'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote',
-               'keyboard', 'cell phone', 'microwave', 'oven', 'toaster',
-               'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors',
-               'teddy bear', 'hair drier', 'toothbrush']
-
-
 class MaskRCNN:
     def __init__(self, classes=None, n_gpus=1):
         class InferenceConfig(coco.CocoConfig):
             GPU_COUNT = n_gpus
             IMAGES_PER_GPU = 1
 
-        self.class_names = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
-        print(class_names)
+        coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
+        print(coco_classes)
         if not classes:
-            self.classes = self.class_names
+            self.classes = coco_classes
 
         self.model = modellib.MaskRCNN('inference', InferenceConfig(), 'segmentation/mrcnn/logs')
         self.model.load_weights('segmentation/mrcnn/mask_rcnn_coco.h5', by_name=True)
-        self.classes = [class_names.index(name) for name in classes]
+        self.classes = [coco_classes.index(name) for name in classes]
 
     def detect(self, image):
         textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
