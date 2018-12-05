@@ -34,6 +34,7 @@ class MaskRCNN:
         self.classes = [class_names.index(name) for name in classes]
 
     def detect(self, image):
+        print(image.shape)
         result = self.model.detect([image])[0]
         classes = result['class_ids']
         matches = [i for i, class_id in enumerate(classes) if class_id in self.classes]
