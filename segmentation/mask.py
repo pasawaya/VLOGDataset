@@ -36,7 +36,7 @@ class MaskRCNN:
         h, w = image.shape[:2]
         for i in range(n_objects):
             class_id = int(boxes[0, 0, i, 1])
-            if class_id in self.classes or True:
+            if class_id in self.classes:
                 box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
                 x_start, y_start, x_end, y_end = box.astype(np.int)
                 w_box, h_box = x_end - x_start, y_end - y_start
