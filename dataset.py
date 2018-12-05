@@ -53,9 +53,14 @@ class VLOGDataset:
         print('\nDownloading video ' + str(self.start + idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
-        if not video:
-            raise RuntimeError('Could not download video from Youtube.')
-        return self.start + idx, video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
+        try:
+            if not video:
+                raise RuntimeError('Could not download video from Youtube.')
+            frames = video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
+        except RuntimeError:
+            frames = []
+
+        return self.start + idx, frames
 
     @staticmethod
     def object_labels():
