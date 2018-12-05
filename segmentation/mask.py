@@ -41,5 +41,8 @@ class MaskRCNN:
         scores = result['scores'][matches]
         masks = result['masks'][:, :, matches]
         masks = np.moveaxis(masks, 2, 0) * 255
+
+        print(scores.shape)
+        print(masks.shape)
         return scores, masks.astype(np.uint8)
 
