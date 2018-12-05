@@ -39,7 +39,7 @@ class MaskRCNN:
             if class_id in self.classes or True:
                 box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
                 x_start, y_start, x_end, y_end = box.astype(np.int)
-                w_box, h_box = x_end - x_start, x_end - y_end
+                w_box, h_box = x_end - x_start, y_end - y_start
 
                 mask = masks[i, class_id]
                 mask = cv2.resize(mask, (w_box, h_box), interpolation=cv2.INTER_NEAREST)
