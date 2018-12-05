@@ -33,8 +33,8 @@ def main(args):
     detector = MaskRCNN(classes=args.classes)
     current = 0
 
-    for i, frames in enumerate(dataset):
-        print('Processing video ' + str(i) + '...')
+    for video_id, frames in dataset:
+        print('Processing video ' + str(video_id) + '...')
         with tqdm(total=len(frames)) as t:
             for frame in frames:
                 scores, masks = detector.detect(frame)
