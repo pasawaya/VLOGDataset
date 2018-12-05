@@ -39,7 +39,7 @@ class MaskRCNN:
             if class_id in self.classes or True:
                 box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
                 x_start, y_start, x_end, y_end = box.astype(np.int)
-                w_box, h_box = x_end - x_start + 1, x_end - y_end + 1
+                w_box, h_box = x_end - x_start, x_end - y_end
 
                 mask = masks[i, class_id]
                 mask = cv2.resize(mask, (w_box, h_box), interpolation=cv2.INTER_NEAREST)
@@ -48,7 +48,7 @@ class MaskRCNN:
                 mask_container = np.zeros((h, w), dtype=np.uint8)
                 print(mask_container.shape)
                 print(mask.shape)
-                mask_container[y_start:y_end + 1, x_start:x_end + 1][mask] = 1
+                mask_container[y_start:y_end, x_start:x_end][mask] = 1
                 print('\t' + str(mask_container.shape))
                 cleaned_masks.append(mask)
                 scores.append(boxes[0, 0, i, 2])
