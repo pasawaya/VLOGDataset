@@ -36,8 +36,8 @@ class MaskRCNN:
         self.classes = [class_names.index(name) for name in classes]
 
     def detect(self, image):
-        textGraph = "./mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
-        modelWeights = "mask_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb"
+        textGraph = "segmentation/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
+        modelWeights = "segmentation/mask_rcnn_inception_v2_coco_2018_01_28/frozen_inference_graph.pb"
 
         net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
         net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
