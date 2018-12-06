@@ -1,7 +1,11 @@
 import cv2
 import numpy as np
 
-from maskrcnn.config import cfg
+import sys
+sys.path.insert(0, './maskrcnn')
+
+from demo.predictor import COCODemo
+from 
 from maskrcnn.demo.predictor import COCODemo
 
 # Suppress AVX, etc. warnings when running on CPU
