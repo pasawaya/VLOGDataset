@@ -11,7 +11,7 @@ from maskrcnn_benchmark.config import cfg
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-config_file = "../configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
+config_file = "segmentation/maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
 
 
 class MaskRCNN:
