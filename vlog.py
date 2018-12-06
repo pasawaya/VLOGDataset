@@ -34,8 +34,8 @@ def main(args):
     current = 0
 
     for video_id, frames in dataset:
-        print('[' + str(video_id) + ']')
         if frames:
+            print('Processing video ' + str(video_id) + '...')
             n_detected, n_saved, n_confidence_rejects, n_area_rejects = 0, 0, 0, 0
             with tqdm(total=len(frames)) as t:
                 for frame in frames:

@@ -1,20 +1,29 @@
 import cv2
 import numpy as np
 
+from maskrcnn_benchmark.config import cfg
+from predictor import COCODemo
 
 # Suppress AVX, etc. warnings when running on CPU
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+config_file = "../configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
+
 
 class MaskRCNN:
     def __init__(self, classes=None):
-        textGraph = "segmentation/model/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt"
-        modelWeights = "segmentation/model/frozen_inference_graph.pb"
+        # update the config options with the config file
+        cfg.merge_from_file(config_file)
 
-        self.net = cv2.dnn.readNetFromTensorflow(modelWeights, textGraph)
-        self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
-        self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+        # manual override some options
+        cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
+
+        self.demo = COCODemo(
+            cfg,
+            min_image_size=800,
+            confidence_threshold=0.7,
+        )
 
         # Load classes and determine indices of desired object classes
         coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
@@ -23,37 +32,6 @@ class MaskRCNN:
         self.classes = [coco_classes.index(name) for name in classes]
 
     def detect(self, image, mask_threshold=0.3):
-        blob = cv2.dnn.blobFromImage(image, swapRB=False, crop=False)
-        self.net.setInput(blob)
-
-        boxes, masks = self.net.forward(['detection_out_final', 'detection_masks'])
-
-        n_objects = boxes.shape[2]
-        scores = []
-        cleaned_masks = []
-
-        h, w = image.shape[:2]
-        for i in range(n_objects):
-            class_id = int(boxes[0, 0, i, 1])
-            if class_id in self.classes:
-                box = boxes[0, 0, i, 3:7] * np.array([w, h, w, h])
-                x_start, y_start, x_end, y_end = box.astype(np.int)
-                w_box, h_box = x_end - x_start, y_end - y_start
-
-                mask = masks[i, class_id]
-                mask = cv2.resize(mask, (w_box, h_box), interpolation=cv2.INTER_NEAREST)
-                mask = (mask > mask_threshold)
-
-                mask_container = np.zeros((h, w), dtype=np.uint8)
-                mask_container[y_start:y_end, x_start:x_end] = mask
-                cleaned_masks.append(mask_container)
-                scores.append(boxes[0, 0, i, 2])
-
-        scores = np.array(scores)
-
-        if cleaned_masks:
-            cleaned_masks = np.dstack(cleaned_masks)
-            cleaned_masks = (np.moveaxis(cleaned_masks, 2, 0) * 255).astype(np.uint8)
-        else:
-            cleaned_masks = np.array([])
-        return scores, cleaned_masks
+        predictions = self.demo.run_on_opencv_image(image)
+        print(predictions.shape)
+        return 0
