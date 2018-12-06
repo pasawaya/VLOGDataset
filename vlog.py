@@ -36,6 +36,7 @@ def main(args):
     for video_id, frames in dataset:
         if frames:
             print('Processing video ' + str(video_id) + '...')
+            n_detected, n_saved, n_confidence_rejects, n_area_rejects = 0, 0, 0, 0
             with tqdm(total=len(frames)) as t:
                 for frame in frames:
                     scores, masks = detector.detect(frame)
@@ -55,7 +56,15 @@ def main(args):
                             imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
 
                             current += 1
+                            n_saved += 1
+                        n_confidence_rejects += score < args.confidence_threshold
+                        n_area_rejects += area_ratio > args.area_threshold
+                        n_detected += 1
                     t.update()
+            print('# Detected: ' + n_detected +
+                  '\n# Saved: ' + n_saved +
+                  '\n# Confidence Rejects: ' + n_confidence_rejects +
+                  '\n# Area Rejects: ' + n_area_rejects)
     del_dirs(download_dir)
 
 
