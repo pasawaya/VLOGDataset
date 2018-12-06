@@ -57,7 +57,8 @@ class VLOGDataset:
             if not video:
                 raise RuntimeError('Could not download video from Youtube.')
             frames = video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
-        except RuntimeError:
+        except RuntimeError as e:
+            print(e)
             frames = []
 
         return self.start + idx, frames
