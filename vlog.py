@@ -34,27 +34,28 @@ def main(args):
     current = 0
 
     for video_id, frames in dataset:
-        print('Processing video ' + str(video_id) + '...')
-        with tqdm(total=len(frames)) as t:
-            for frame in frames:
-                scores, masks = detector.detect(frame)
-                total_area = frame.shape[0] * frame.shape[1]
+        if frames:
+            print('Processing video ' + str(video_id) + '...')
+            with tqdm(total=len(frames)) as t:
+                for frame in frames:
+                    scores, masks = detector.detect(frame)
+                    total_area = frame.shape[0] * frame.shape[1]
 
-                for score, mask in zip(scores, masks):
-                    area = np.count_nonzero(mask)
-                    area_ratio = area / total_area
+                    for score, mask in zip(scores, masks):
+                        area = np.count_nonzero(mask)
+                        area_ratio = area / total_area
 
-                    if score >= args.confidence_threshold and area_ratio <= args.area_threshold:
-                        inpainted, dilated = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
-                        sf = surface_normals(cv2.resize(inpainted, (256, 256)))
-                        imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
-                        imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))
-                        imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-                        imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
-                        imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
+                        if score >= args.confidence_threshold and area_ratio <= args.area_threshold:
+                            inpainted, dilated = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
+                            sf = surface_normals(cv2.resize(inpainted, (256, 256)))
+                            imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
+                            imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))
+                            imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
+                            imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
+                            imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
 
-                        current += 1
-                t.update()
+                            current += 1
+                    t.update()
     del_dirs(download_dir)
 
 
