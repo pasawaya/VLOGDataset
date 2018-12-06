@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 import sys
-sys.path.insert(0, './maskrcnn/demo')
+sys.path.insert(0, 'segmentation/maskrcnn/demo')
 
 from predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
