@@ -15,6 +15,7 @@ def generative_inpaint(image, mask, checkpoint, dilate=True):
 
     mask = np.expand_dims(mask, 2)
     mask = np.repeat(mask, 3, axis=2)
+    dilated = np.copy(mask)
     image = image[:h // grid * grid, :w // grid * grid, :]
     mask = mask[:h // grid * grid, :w // grid * grid, :]
 
@@ -41,7 +42,7 @@ def generative_inpaint(image, mask, checkpoint, dilate=True):
             assign_ops.append(tf.assign(var, var_value))
         sess.run(assign_ops)
         result = sess.run(output)
-        return result[0][:, :, ::-1], mask
+        return result[0][:, :, ::-1], dilated
 
 
 def telea_inpaint(image, mask):
