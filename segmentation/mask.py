@@ -31,9 +31,10 @@ class MaskRCNN:
         self.classes = [coco_classes.index(name) for name in classes]
 
     def detect(self, image):
-        print('Detecting:')
         predictions = self.demo.compute_prediction(image)
-        print(type(predictions))
-        print(len(predictions))
+        masks = predictions.get_field("mask").numpy()
+        labels = predictions.get_field("labels")
+        print(masks.shape)
+        print(labels.shape)
 
         return 0
