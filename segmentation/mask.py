@@ -23,7 +23,7 @@ class MaskRCNN:
         self.classes = [coco_classes.index(name) for name in classes]
 
     def detect(self, image, mask_threshold=0.3):
-        blob = cv2.dnn.blobFromImage(image, swapRB=True, crop=False)
+        blob = cv2.dnn.blobFromImage(image, swapRB=False, crop=False)
         self.net.setInput(blob)
 
         boxes, masks = self.net.forward(['detection_out_final', 'detection_masks'])
