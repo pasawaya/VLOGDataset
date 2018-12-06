@@ -2,11 +2,10 @@ import cv2
 import numpy as np
 
 import sys
-sys.path.insert(0, './maskrcnn')
+sys.path.insert(0, './maskrcnn/demo')
 
-from demo.predictor import COCODemo
-from 
-from maskrcnn.demo.predictor import COCODemo
+from predictor import COCODemo
+from maskrcnn_benchmark.config import cfg
 
 # Suppress AVX, etc. warnings when running on CPU
 import os
