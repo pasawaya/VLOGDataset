@@ -61,10 +61,10 @@ def main(args):
                         n_area_rejects += area_ratio > args.area_threshold
                         n_detected += 1
                     t.update()
-            print('# Detected: ' + n_detected +
-                  '\n# Saved: ' + n_saved +
-                  '\n# Confidence Rejects: ' + n_confidence_rejects +
-                  '\n# Area Rejects: ' + n_area_rejects)
+            print('# Detected: ' + str(n_detected) +
+                  '\n# Saved: ' + str(n_saved) +
+                  '\n# Confidence Rejects: ' + str(n_confidence_rejects) +
+                  '\n# Area Rejects: ' + str(n_area_rejects))
     del_dirs(download_dir)
 
 
