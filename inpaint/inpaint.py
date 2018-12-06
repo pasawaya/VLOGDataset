@@ -41,7 +41,7 @@ def generative_inpaint(image, mask, checkpoint, dilate=True):
             assign_ops.append(tf.assign(var, var_value))
         sess.run(assign_ops)
         result = sess.run(output)
-        return result[0][:, :, ::-1]
+        return result[0][:, :, ::-1], mask
 
 
 def telea_inpaint(image, mask):
