@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from maskrcnn_benchmark.config import cfg
-from maskrcnn_benchmark.demo.predictor import COCODemo
+from maskrcnn.config import cfg
+from maskrcnn.demo.predictor import COCODemo
 
 # Suppress AVX, etc. warnings when running on CPU
 import os
