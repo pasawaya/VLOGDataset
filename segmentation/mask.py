@@ -34,7 +34,10 @@ class MaskRCNN:
             classes = coco_classes
         self.classes = [coco_classes.index(name) for name in classes]
 
-    def detect(self, image, mask_threshold=0.3):
-        predictions = self.demo.run_on_opencv_image(image)
-        print(predictions.shape)
+    def detect(self, image):
+        print('Detecting:')
+        predictions = self.demo.compute_prediction(image)
+        print(type(predictions))
+        print(len(predictions))
+
         return 0
