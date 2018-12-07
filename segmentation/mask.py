@@ -22,7 +22,7 @@ class MaskRCNN:
         cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
 
         self.area_threshold = area_threshold
-        self.demo = COCODemo(cfg, min_image_size=800, confidence_threshold=confidence_threshold)
+        self.demo = COCODemo(cfg, confidence_threshold=confidence_threshold)
 
         # Load classes and determine indices of desired object classes
         coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
