@@ -39,6 +39,6 @@ class MaskRCNN:
         # Retain only desired object classes
         matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
         scores = scores[matches]
-        masks = masks[matches, :, :]
+        masks = (masks[matches, :, :] * 255).astype(np.uint8)
 
         return scores, masks
