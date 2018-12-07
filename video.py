@@ -1,9 +1,10 @@
 
+import os
 import cv2
+import numpy as np
+
 from pytube import YouTube
 from pytube.exceptions import RegexMatchError
-import os
-import numpy as np
 
 
 class Video:

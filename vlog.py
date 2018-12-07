@@ -1,10 +1,9 @@
 
-from os_utils import safe_makedirs, del_dirs
 from normals import surface_normals
 from inpaint import generative_inpaint
 from segmentation import MaskRCNN
 from dataset import DirectoryDataset, VLOGDataset
-from utils import resize_pad
+from utils import resize_pad, safe_makedirs, del_dirs
 
 import os
 import cv2

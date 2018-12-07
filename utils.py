@@ -1,6 +1,26 @@
 
+import os
+import shutil
 import numpy as np
 from skimage.transform import resize
+
+
+def safe_makedirs(dirs):
+    if not isinstance(dirs, list):
+        dirs = [dirs]
+
+    for dir_name in dirs:
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+
+
+def del_dirs(dirs):
+    if not isinstance(dirs, list):
+        dirs = [dirs]
+
+    for dir_name in dirs:
+        if os.path.isdir(dir_name):
+            shutil.rmtree(dir_name)
 
 
 def resize_pad(image, new_shape, fill=0):

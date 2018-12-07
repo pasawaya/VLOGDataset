@@ -1,6 +1,6 @@
 
 from video import *
-from os_utils import safe_makedirs, del_dirs
+from utils import safe_makedirs, del_dirs
 
 
 class DirectoryDataset:

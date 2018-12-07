@@ -1,7 +1,7 @@
 
 import os
 import cv2
-from os_utils import safe_makedirs, del_dirs
+from utils import safe_makedirs, del_dirs
 from scipy.misc import imsave
 from subprocess import call, DEVNULL
 
