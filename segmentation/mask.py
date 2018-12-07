@@ -39,5 +39,7 @@ class MaskRCNN:
         print(masks.shape)
         print(labels.shape)
         print(scores.shape)
+        print(labels)
+        print(scores)
 
         return 0
