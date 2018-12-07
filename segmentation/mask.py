@@ -39,19 +39,7 @@ class MaskRCNN:
 
         # Retain only desired object classes
         matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
-        print(masks.shape)
-        print(labels.shape)
-        print(scores.shape)
-        print(labels)
-        print(scores)
-        
         scores = scores[matches]
         masks = masks[matches, :, :]
 
-        print(masks.shape)
-        print(labels.shape)
-        print(scores.shape)
-        print(labels)
-        print(scores)
-
-        return 0
+        return scores, masks
