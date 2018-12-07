@@ -14,13 +14,14 @@ config_file = "segmentation/maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_ca
 
 
 class MaskRCNN:
-    def __init__(self, confidence_threshold, classes=None):
+    def __init__(self, confidence_threshold, area_threshold, classes=None):
         # update the config options with the config file
         cfg.merge_from_file(config_file)
 
         # manual override some options
         cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
 
+        self.area_threshold = area_threshold
         self.demo = COCODemo(cfg, min_image_size=800, confidence_threshold=confidence_threshold)
 
         # Load classes and determine indices of desired object classes
@@ -39,6 +40,13 @@ class MaskRCNN:
         # Retain only desired object classes
         matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
         scores = scores[matches]
-        masks = (masks[matches, :, :] * 255).astype(np.uint8)
+        masks = masks[matches, :, :]
 
+        # Retain only masks below area threshold
+        total_area = image.shape[0] * image.shape[1]
+        matches = [i for i, mask in enumerate(masks) if (np.count_nonzero(mask) / total_area) <= self.area_threshold]
+        scores = scores[matches]
+        masks = masks[matches, :, :]
+
+        masks = np.clip(masks * 255., 0, 255).astype(np.uint8)
         return scores, masks
