@@ -3,8 +3,6 @@ import cv2
 import torch
 from torchvision import transforms as T
 
-import sys
-sys.path.insert(0, 'segmentation/maskrcnn')
 
 from maskrcnn_benchmark.modeling.detector import build_detection_model
 from maskrcnn_benchmark.utils.checkpoint import DetectronCheckpointer
