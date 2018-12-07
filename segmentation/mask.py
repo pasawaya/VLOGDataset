@@ -15,14 +15,14 @@ config_file = "segmentation/maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_ca
 
 
 class MaskRCNN:
-    def __init__(self, classes=None):
+    def __init__(self, confidence_threshold, classes=None):
         # update the config options with the config file
         cfg.merge_from_file(config_file)
 
         # manual override some options
         cfg.merge_from_list(["MODEL.DEVICE", "cpu"])
 
-        self.demo = COCODemo(cfg, min_image_size=800, confidence_threshold=0.7)
+        self.demo = COCODemo(cfg, min_image_size=800, confidence_threshold=confidence_threshold)
 
         # Load classes and determine indices of desired object classes
         coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
@@ -38,8 +38,8 @@ class MaskRCNN:
         masks = np.squeeze(masks, 1)
 
         # Retain only desired object classes
-        matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
-        scores = scores[matches]
-        masks = masks[matches, :, :]
+        # matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
+        # scores = scores[matches]
+        # masks = masks[matches, :, :]
 
         return scores, masks

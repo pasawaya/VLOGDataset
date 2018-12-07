@@ -30,13 +30,13 @@ def main(args):
     else:
         dataset = DirectoryDataset(args.input_dir, fps=args.fps)
 
-    detector = MaskRCNN(classes=args.classes)
+    detector = MaskRCNN(args.confidence_threshold, classes=args.classes)
     current = 0
 
     for video_id, frames in dataset:
         if frames:
             print('Processing video ' + str(video_id) + '...')
-            n_detected, n_saved, n_confidence_rejects, n_area_rejects = 0, 0, 0, 0
+            n_detected, n_saved, n_area_rejects = 0, 0, 0
             with tqdm(total=len(frames)) as t:
                 for frame in frames:
                     scores, masks = detector.detect(frame)
@@ -46,7 +46,7 @@ def main(args):
                         area = np.count_nonzero(mask)
                         area_ratio = area / total_area
 
-                        if score >= args.confidence_threshold and area_ratio <= args.area_threshold:
+                        if area_ratio <= args.area_threshold:
                             inpainted, dilated = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
                             sf = surface_normals(cv2.resize(inpainted, (256, 256)))
                             imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
@@ -57,13 +57,11 @@ def main(args):
 
                             current += 1
                             n_saved += 1
-                        n_confidence_rejects += score < args.confidence_threshold
                         n_area_rejects += area_ratio > args.area_threshold
                         n_detected += 1
                     t.update()
             print('# Detected: ' + str(n_detected) +
                   '\n# Saved: ' + str(n_saved) +
-                  '\n# Confidence Rejects: ' + str(n_confidence_rejects) +
                   '\n# Area Rejects: ' + str(n_area_rejects))
     del_dirs(download_dir)
 
