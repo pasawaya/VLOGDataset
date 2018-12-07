@@ -4,13 +4,12 @@ from normals import surface_normals
 from inpaint import generative_inpaint
 from segmentation import MaskRCNN
 from dataset import DirectoryDataset, VLOGDataset
+from utils import resize_pad
 
 import os
 import cv2
 import argparse
-import numpy as np
 from tqdm import tqdm
-from utils import resize_pad
 from scipy.misc import imsave
 
 
@@ -44,9 +43,9 @@ def main(args):
                         sf = surface_normals(cv2.resize(inpainted, (256, 256)))
                         imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
                         imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))
-                        imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
+                        # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
 
                         current += 1
                     t.update()
