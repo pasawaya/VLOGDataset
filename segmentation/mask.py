@@ -34,7 +34,7 @@ class MaskRCNN:
         # Retain only predictions with confidence above confidence threshold
         predictions = self.demo.compute_prediction(image)
         predictions = self.demo.select_top_predictions(predictions)
-        
+
         masks = predictions.get_field("mask").numpy()
         labels = predictions.get_field("labels").numpy()
         scores = predictions.get_field("scores").numpy()

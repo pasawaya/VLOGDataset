@@ -4,6 +4,14 @@ from skimage.transform import resize
 
 
 def resize_pad(image, new_shape, fill=0):
+    """
+    Resizes an image while maintaining aspect ratio, appropriately padding borders
+
+    :param image: image to resize (either 2D grayscale image or 3D RGB image)
+    :param new_shape: (w, h) of output image
+    :param fill: value to pad edges with
+    :return: output image of size (w, h) and same aspect ratio as input image
+    """
     new_h, new_w = new_shape
 
     if len(image.shape) == 2:
@@ -13,7 +21,7 @@ def resize_pad(image, new_shape, fill=0):
 
     f_xy = min(new_w / w, new_h / h)
     h, w = int(h * f_xy), int(w * f_xy)
-    scaled = scale(image, (h, w))
+    scaled = resize(image, (h, w), preserve_range=True, anti_aliasing=True, mode='constant').astype(np.uint8)
 
     if len(scaled.shape) == 3:
         scaled_h, scaled_w, _ = scaled.shape
@@ -31,7 +39,3 @@ def resize_pad(image, new_shape, fill=0):
 
     return output
 
-
-def scale(image, shape):
-    image = resize(image, shape, preserve_range=True, anti_aliasing=True, mode='constant').astype(np.uint8)
-    return image
