@@ -37,8 +37,8 @@ class MaskRCNN:
         masks = np.squeeze(masks, 1)
 
         # Retain only desired object classes
-        # matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
-        # scores = scores[matches]
-        # masks = masks[matches, :, :]
+        matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
+        scores = scores[matches]
+        masks = masks[matches, :, :]
 
         return scores, masks
