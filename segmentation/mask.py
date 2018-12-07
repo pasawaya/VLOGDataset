@@ -36,6 +36,18 @@ class MaskRCNN:
         labels = predictions.get_field("labels").numpy()
         scores = predictions.get_field("scores").numpy()
         masks = np.squeeze(masks, 1)
+
+        # Retain only desired object classes
+        matches = [i for i, class_id in enumerate(labels) if class_id in self.classes]
+        print(masks.shape)
+        print(labels.shape)
+        print(scores.shape)
+        print(labels)
+        print(scores)
+        
+        scores = scores[matches]
+        masks = masks[matches, :, :]
+
         print(masks.shape)
         print(labels.shape)
         print(scores.shape)
