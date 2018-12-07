@@ -81,7 +81,7 @@ if __name__ == '__main__':
                         type=int,
                         help='Output height.')
     parser.add_argument('--confidence_threshold',
-                        default=0.75,
+                        default=0.84,
                         type=float,
                         help='Confidence threshold below which mask will be discarded.')
     parser.add_argument('--area_threshold',
