@@ -48,6 +48,7 @@ def main(args):
 
                         if area_ratio <= args.area_threshold:
                             inpainted, dilated = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
+                            print(inpainted.shape)
                             sf = surface_normals(cv2.resize(inpainted, (256, 256)))
                             imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
                             imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))

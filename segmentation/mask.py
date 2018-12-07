@@ -1,15 +1,14 @@
-import cv2
 import numpy as np
+
+# Suppress AVX, etc. warnings when running on CPU
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import sys
 sys.path.insert(0, 'segmentation/maskrcnn/demo')
 
 from predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
-
-# Suppress AVX, etc. warnings when running on CPU
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 config_file = "segmentation/maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
 
