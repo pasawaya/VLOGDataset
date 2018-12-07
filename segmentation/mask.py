@@ -5,12 +5,12 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import sys
-sys.path.insert(0, 'segmentation/maskrcnn/demo')
+sys.path.insert(0, 'maskrcnn/demo')
 
 from predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
 
-config_file = "segmentation/maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
+config_file = "maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
 
 
 class MaskRCNN:
