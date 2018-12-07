@@ -33,8 +33,11 @@ class MaskRCNN:
     def detect(self, image):
         predictions = self.demo.compute_prediction(image)
         masks = predictions.get_field("mask").numpy()
-        labels = predictions.get_field("labels")
+        labels = predictions.get_field("labels").numpy()
+        scores = predictions.get_field("scores").numpy()
+        masks = np.squeeze(masks, 1)
         print(masks.shape)
         print(labels.shape)
+        print(scores.shape)
 
         return 0
