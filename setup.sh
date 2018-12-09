@@ -39,7 +39,8 @@ done
 
 
 # Create directory to contain generative in-painting model
-mkdir "$CURRDIR/inpaint/model_logs"
+unzip "$CURRDIR/inpaint/model_logs"
+
 
 
 # Install general dependencies
