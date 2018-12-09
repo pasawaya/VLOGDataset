@@ -30,13 +30,7 @@
     sh setup.sh
     ``` 
     
-4. Install the dependencies
-   ```bash
-   pip install -r requirements.txt
-   
-   pip install git+https://github.com/JiahuiYu/neuralgym
-   ```
-5. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
+4. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
 
 
 
