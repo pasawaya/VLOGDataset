@@ -4,8 +4,8 @@ import numpy as np
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-import sys
-sys.path.insert(0, 'maskrcnn/demo')
+# import sys
+# sys.path.insert(0, 'maskrcnn/demo')
 
 from predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
@@ -25,7 +25,7 @@ class MaskRCNN:
         self.demo = COCODemo(cfg, confidence_threshold=confidence_threshold)
 
         # Load classes and determine indices of desired object classes
-        coco_classes = open('segmentation/model/object_detection_classes_coco.txt').read().strip().split('\n')
+        coco_classes = open('segmentation/classes.txt').read().strip().split('\n')
         if not classes:
             classes = coco_classes
         self.classes = [coco_classes.index(name) for name in classes]

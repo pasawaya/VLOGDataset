@@ -14,7 +14,7 @@ def safe_makedirs(dirs):
             os.makedirs(dir_name)
 
 
-def del_dirs(dirs):
+def safe_deldirs(dirs):
     if not isinstance(dirs, list):
         dirs = [dirs]
 

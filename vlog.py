@@ -3,7 +3,7 @@ from normals import surface_normals
 from inpaint import generative_inpaint
 from segmentation import MaskRCNN
 from data.dataset import DirectoryDataset, VLOGDataset
-from utils import resize_pad, safe_makedirs, del_dirs
+from utils import resize_pad, safe_makedirs, safe_deldirs
 
 import os
 import cv2
@@ -48,7 +48,7 @@ def main(args):
 
                         current += 1
                     t.update()
-    del_dirs(download_dir)
+    safe_deldirs(download_dir)
 
 
 if __name__ == '__main__':
