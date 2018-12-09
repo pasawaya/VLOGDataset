@@ -5,9 +5,9 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # import sys
-# sys.path.insert(0, 'maskrcnn/demo')
+# sys.path.insert(0, 'maskrcnn-benchmark')
 
-from predictor import COCODemo
+from demo.predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
 
 config_file = "maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
