@@ -16,8 +16,7 @@ def surface_normals(image):
     imsave(image_path, image)
     cmd = 'python taskonomy/taskbank/tools/run_img_task.py --task rgb2sfnorm ' \
           '--img \"' + image_path + '\" --store \"' + normals_path + '\"'
-    # call(cmd, shell=True, stdout=DEVNULL, stderr=DEVNULL)
-    call(cmd, shell=True)
+    call(cmd, shell=True, stdout=DEVNULL, stderr=DEVNULL)
 
     # Load results from file and clean-up temporary images and folders
     sf = cv2.imread(normals_path)
