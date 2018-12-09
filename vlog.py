@@ -33,7 +33,12 @@ def main(args):
     detector = MaskRCNN(args.confidence_threshold, args.area_threshold, classes=args.classes)
     current = 0
 
-    logging.basicConfig(filename='progress.log', level=logging.DEBUG)
+    # Initialize logger
+    logger = logging.getLogger('vlog')
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('progress.log')
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
 
     for video_id, frames in dataset:
         if frames:
@@ -49,7 +54,7 @@ def main(args):
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-                        logging.info("Saved object with score " + str(score))
+                        logger.info("Saved object with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)
