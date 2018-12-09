@@ -17,7 +17,7 @@ from scipy.misc import imsave
 def main(args):
     w, h = args.w, args.h
 
-    logging.basicConfig(filename='log.log', level=logging.INFO)
+    logging.basicConfig(filename='progress.log', level=logging.DEBUG)
 
     frames_subdir = os.path.join(args.output_dir, 'frames')
     inpainted_subdir = os.path.join(args.output_dir, 'inpainted')
