@@ -11,6 +11,5 @@ h5py==2.8.0
 pycocotools==2.0.0
 opencv-python==3.4.4.19
 Pillow==5.3.0
-skimage==0.0
 scikit-learn==0.20.1
 matplotlib==2.2
