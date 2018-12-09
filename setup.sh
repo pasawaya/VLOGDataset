@@ -1,10 +1,28 @@
-##!/usr/bin/env bash
+#!/usr/bin/env bash
 
 
 # Download Mask-RCNN dependencies and build sources
+conda install ipython
+pip install ninja yacs cython matplotlib
+conda install pytorch-nightly -c pytorch
+
+git clone https://github.com/pytorch/vision.git
+cd vision
+python setup.py install
+
+cd ..
+git clone https://github.com/cocodataset/cocoapi.git
+cd cocoapi/PythonAPI
+python setup.py build_ext install
+
+cd ../..
+git clone https://github.com/facebookresearch/maskrcnn-benchmark.git
+cd maskrcnn-benchmark
+python setup.py build develop
+cd ..
 
 
-# 1. Download Taskononomy surface normals model
+# Download Taskononomy surface normals model
 CURRDIR=$(pwd)
 
 TASK="rgb2sfnorm"
@@ -19,8 +37,11 @@ for s in $SUBFIX; do
 model_log_final/${TASK}/logs/model.permanent-ckpt.${s}" -P "$CURRDIR/taskonomy/taskbank/temp/${TASK}"
 done
 
-# 2. Create directory to contain generative in-painting model
+
+# Create directory to contain generative in-painting model
 mkdir "$CURRDIR/inpaint/model_logs"
 
-# 3. Download Mask R-CNN model
-wget "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5" -P "$CURRDIR/segmentation/mrcnn"
+
+# Install general dependencies
+pip install -r requirements.txt
+pip install git+https://github.com/JiahuiYu/neuralgym
