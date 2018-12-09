@@ -7,13 +7,17 @@ from utils import resize_pad, safe_makedirs, safe_deldirs
 
 import os
 import cv2
+import logging
 import argparse
+
 from tqdm import tqdm
 from scipy.misc import imsave
 
 
 def main(args):
     w, h = args.w, args.h
+
+    logging.basicConfig(filename='log.log', level=logging.INFO)
 
     frames_subdir = os.path.join(args.output_dir, 'frames')
     inpainted_subdir = os.path.join(args.output_dir, 'inpainted')
@@ -33,7 +37,7 @@ def main(args):
 
     for video_id, frames in dataset:
         if frames:
-            print('Processing video ' + str(video_id) + '...')
+            logging.info('Processing video ' + str(video_id) + '...')
             with tqdm(total=len(frames)) as t:
                 for frame in frames:
                     scores, masks = detector.detect(frame)
@@ -45,7 +49,7 @@ def main(args):
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-
+                        logging.info("\tSaved object with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)

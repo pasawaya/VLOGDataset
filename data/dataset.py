@@ -1,4 +1,6 @@
 
+import logging
+
 from video import *
 from utils import safe_makedirs
 
@@ -50,7 +52,7 @@ class VLOGDataset:
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
-        print('\nDownloading video ' + str(self.start + idx) + '...')
+        logging.info('\nDownloading video ' + str(self.start + idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
         try:
