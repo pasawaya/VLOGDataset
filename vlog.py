@@ -17,8 +17,6 @@ from scipy.misc import imsave
 def main(args):
     w, h = args.w, args.h
 
-    logging.basicConfig(filename='progress.log', level=logging.DEBUG)
-
     frames_subdir = os.path.join(args.output_dir, 'frames')
     inpainted_subdir = os.path.join(args.output_dir, 'inpainted')
     masks_subdir = os.path.join(args.output_dir, 'masks')
@@ -35,6 +33,8 @@ def main(args):
     detector = MaskRCNN(args.confidence_threshold, args.area_threshold, classes=args.classes)
     current = 0
 
+    logging.basicConfig(filename='progress.log', level=logging.DEBUG)
+
     for video_id, frames in dataset:
         if frames:
             logging.info('Processing video ' + str(video_id) + '...')
@@ -49,7 +49,7 @@ def main(args):
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-                        logging.info("\tSaved object with score " + str(score))
+                        logging.info("Saved object with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)
