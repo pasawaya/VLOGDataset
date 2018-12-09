@@ -15,7 +15,7 @@
 
 1. (Highly recommended) Create a fresh Anaconda environment
    ```bash
-   conda create --name vlog
+   conda create -n vlog python=3.6 anaconda
    source activate vlog
    ```
 
