@@ -39,7 +39,7 @@ done
 
 
 # Create directory to contain generative in-painting model
-unzip "$CURRDIR/inpaint/model_logs"
+unzip "$CURRDIR/inpaint/model_logs.zip" -d "$CURRDIR/inpaint"
 
 
 
