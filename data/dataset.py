@@ -28,11 +28,11 @@ class VLOGDataset:
         if labels is not None:
             objects = [self.object_labels().index(label) for label in labels]
 
-        annotations = np.load('vlog_meta/hand_object.npy')
+        annotations = np.load('data/hand_object.npy')
         indices = [np.where(annotations[:, obj] == 1)[0] for obj in objects]
         indices = np.unique(np.hstack(indices))
 
-        links = open('vlog_meta/youtube_links.txt', 'r')
+        links = open('data/youtube_links.txt', 'r')
         self.entries = [link for i, link in enumerate(links) if i in indices]
         links.close()
 
@@ -65,7 +65,7 @@ class VLOGDataset:
 
     @staticmethod
     def object_labels():
-        file = open('vlog_meta/hand_object_labels.txt', 'r')
+        file = open('data/hand_object_labels.txt', 'r')
         labels = [line.strip() for line in file.readlines()]
         file.close()
         return labels
