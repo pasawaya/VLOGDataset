@@ -25,7 +25,7 @@ class MaskRCNN:
         self.demo = COCODemo(cfg, confidence_threshold=confidence_threshold)
 
         # Load classes and determine indices of desired object classes
-        coco_classes = open('segmentation/classes.txt').read().strip().split('\n')
+        coco_classes = open('detection/classes.txt').read().strip().split('\n')
         if not classes:
             classes = coco_classes
         self.classes = [coco_classes.index(name) for name in classes]

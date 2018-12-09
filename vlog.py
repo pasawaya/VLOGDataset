@@ -1,7 +1,7 @@
 
 from normals import surface_normals
 from inpaint import generative_inpaint
-from segmentation import MaskRCNN
+from detection import MaskRCNN
 from data.dataset import DirectoryDataset, VLOGDataset
 from utils import resize_pad, safe_makedirs, safe_deldirs
 
