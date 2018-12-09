@@ -12,22 +12,31 @@
 
 
 ## Installation
-1. Clone the repository
+
+1. (Highly recommended) Create a fresh Anaconda environment
    ```bash
-   git clone --recursive https://github.com/pasawaya/VLOGDataset.git; cd VLOGDataset/
+   conda create --name maskrcnn_benchmark
+   source activate maskrcnn_benchmark
    ```
 
-2. Install the dependencies
+2. Clone the repository
+   ```bash
+   git clone --recursive https://github.com/pasawaya/VLOGDataset.git
+   ```
+   
+3. Run the setup script
+    ```bash
+    cd VLOGDataset/
+    sh setup.sh
+    ``` 
+    
+4. Install the dependencies
    ```bash
    pip install -r requirements.txt
    
    pip install git+https://github.com/JiahuiYu/neuralgym
    ```
-3. Run the setup script from the root directory
-    ```bash
-    sh setup.sh
-    ``` 
-4. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
+5. Download the in-painting [model](https://drive.google.com/drive/folders/1M3AFy7x9DqXaI-fINSynW7FJSXYROfv-) and place it in ``inpaint/model_logs`` (rename checkpoint.txt to checkpoint because google drive automatically adds the extension after download)
 
 
 
