@@ -10,7 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from demo.predictor import COCODemo
 from maskrcnn_benchmark.config import cfg
 
-config_file = "maskrcnn/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
+config_file = "maskrcnn-benchmark/configs/caffe2/e2e_mask_rcnn_R_50_FPN_1x_caffe2.yaml"
 
 
 class MaskRCNN:
