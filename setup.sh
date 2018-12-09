@@ -1,5 +1,9 @@
 ##!/usr/bin/env bash
 
+
+# Download Mask-RCNN dependencies and build sources
+
+
 # 1. Download Taskononomy surface normals model
 CURRDIR=$(pwd)
 
