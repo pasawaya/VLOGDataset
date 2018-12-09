@@ -15,8 +15,8 @@
 
 1. (Highly recommended) Create a fresh Anaconda environment
    ```bash
-   conda create --name maskrcnn_benchmark
-   source activate maskrcnn_benchmark
+   conda create --name vlog
+   source activate vlog
    ```
 
 2. Clone the repository
