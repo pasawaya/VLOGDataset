@@ -2,9 +2,9 @@
 
 
 # Download Mask-RCNN dependencies and build sources
-conda install ipython
+conda install -y ipython
 pip install ninja yacs cython matplotlib
-conda install pytorch-nightly -c pytorch
+conda install -y pytorch-nightly -c pytorch
 
 git clone https://github.com/pytorch/vision.git
 cd vision
