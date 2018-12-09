@@ -42,7 +42,6 @@ done
 unzip "$CURRDIR/inpaint/model_logs.zip" -d "$CURRDIR/inpaint"
 
 
-
 # Install general dependencies
 pip install -r requirements.txt
 pip install git+https://github.com/JiahuiYu/neuralgym
