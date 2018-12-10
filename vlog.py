@@ -42,7 +42,7 @@ def main(args):
 
     for video_id, frames in dataset:
         if frames:
-            logging.info('Processing video ' + str(video_id) + '...')
+            logger.info('Processing video ' + str(video_id) + '...')
             with tqdm(total=len(frames)) as t:
                 for frame in frames:
                     scores, masks = detector.detect(frame)
@@ -54,7 +54,7 @@ def main(args):
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-                        logger.info("Saved object with score " + str(score))
+                        logger.info("\tSaved object with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)
