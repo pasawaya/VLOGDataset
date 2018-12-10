@@ -26,7 +26,7 @@ class Video:
 
         assert fps <= self.fps
 
-        frame_indices = np.linspace(start, stop, num=int(fps * (stop - start) / self.fps), dtype=np.int)
+        frame_indices = np.linspace(start, stop, num=max(int(fps * (stop - start) / self.fps), 1), dtype=np.int)
         cap = cv2.VideoCapture(self.name)
         frames = []
 
