@@ -52,7 +52,7 @@ class VLOGDataset:
         url, start, stop = self.entries[idx].split(' ')
         start, stop = int(start), int(stop)
 
-        logging.getLogger('vlog').info('Downloading video ' + str(self.start + idx) + '...')
+        logging.getLogger('progress').info('Downloading video ' + str(self.start + idx) + '...')
         video = self.downloader.download_url(url, self.download_dir)
 
         try:
@@ -60,7 +60,7 @@ class VLOGDataset:
                 raise RuntimeError('Could not download video from Youtube.')
             frames = video.load_frames(start=start, stop=stop, fps=self.fps, delete=True)
         except RuntimeError as e:
-            logging.getLogger('vlog').debug(e)
+            logging.getLogger('progress').debug(e)
             frames = []
 
         return self.start + idx, frames

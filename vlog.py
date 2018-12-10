@@ -32,18 +32,24 @@ def main(args):
     detector = MaskRCNN(args.confidence_threshold, args.area_threshold, classes=args.classes)
     current = 0
 
-    # Initialize logger
-    logger = logging.getLogger('vlog')
-    logger.setLevel(logging.DEBUG)
+    # Initialize loggers
+    info = logging.getLogger('info')
+    info.setLevel(logging.DEBUG)
+    fh = logging.FileHandler('info.log')
+    fh.setLevel(logging.DEBUG)
+    info.addHandler(fh)
+
+    progress = logging.getLogger('progress')
+    progress.setLevel(logging.DEBUG)
     fh = logging.FileHandler('progress.log')
     fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
+    progress.addHandler(fh)
 
     # TODO: log input arguments
 
     for video_id, frames in dataset:
         if frames:
-            logger.info('Processing video ' + str(video_id) + '...')
+            progress.info('Processing video ' + str(video_id) + '...')
             with tqdm(total=len(frames)) as t:
                 for frame in frames:
                     scores, masks = detector.detect(frame)
@@ -56,7 +62,7 @@ def main(args):
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
 
-                        logger.info("\tSaved item " + str(current) + " with score " + str(score))
+                        progress.info("\tSaved item " + str(current) + " with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)
