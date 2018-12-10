@@ -6,7 +6,6 @@ from data.dataset import DirectoryDataset, VLOGDataset
 from utils import resize_pad, safe_makedirs, safe_deldirs
 
 import os
-import cv2
 import logging
 import argparse
 
