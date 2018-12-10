@@ -39,6 +39,8 @@ def main(args):
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
+    # TODO: log input arguments
+
     for video_id, frames in dataset:
         if frames:
             logger.info('Processing video ' + str(video_id) + '...')

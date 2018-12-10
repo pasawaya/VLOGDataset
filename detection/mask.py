@@ -51,7 +51,8 @@ class MaskRCNN:
         total_area = image.shape[0] * image.shape[1]
         matches = [i for i, mask in enumerate(masks) if (np.count_nonzero(mask) / total_area) <= self.area_threshold]
         n_rejects = scores.shape[0] - len(matches)
-        logging.getLogger('vlog').info('Rejected ' + str(n_rejects) + ' due to area threshold')
+        if n_rejects > 0:
+            logging.getLogger('vlog').info('Rejected ' + str(n_rejects) + ' due to area threshold')
         scores = scores[matches]
         masks = masks[matches, :, :]
 
