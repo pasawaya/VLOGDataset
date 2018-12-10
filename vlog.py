@@ -48,7 +48,7 @@ def main(args):
                     scores, masks = detector.detect(frame)
                     for score, mask in zip(scores, masks):
                         inpainted, dilated = generative_inpaint(frame, mask, args.inpaint_model_dir, dilate=True)
-                        sf = surface_normals(cv2.resize(inpainted, (256, 256)))
+                        sf = surface_normals(inpainted)
                         imsave(os.path.join(inpainted_subdir, str(current) + '.png'), resize_pad(inpainted, (h, w)))
                         imsave(os.path.join(masks_subdir, str(current) + '.png'), resize_pad(mask, (h, w)))
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
