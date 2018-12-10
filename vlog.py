@@ -54,7 +54,8 @@ def main(args):
                         imsave(os.path.join(frames_subdir, str(current) + '.png'), resize_pad(frame, (h, w)))
                         imsave(os.path.join(sf_subdir, str(current) + '.png'), resize_pad(sf, (h, w)))
                         # imsave(os.path.join(masks_subdir, str(current) + '_dilated.png'), resize_pad(dilated, (h, w)))
-                        logger.info("\tSaved object with score " + str(score))
+
+                        logger.info("\tSaved item " + str(current) + " with score " + str(score))
                         current += 1
                     t.update()
     safe_deldirs(download_dir)
