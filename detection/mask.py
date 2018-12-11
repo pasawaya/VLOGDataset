@@ -59,7 +59,7 @@ class MaskRCNN:
         masks = masks[matches, :, :]
 
         for score, area in zip(scores, areas):
-            logging.getLogger('info').info(str(score) + '\t' + str(area))
+            logging.getLogger('info').info(str(score) + '\t' + str(area) + '\t' + str(area / total_area))
 
         masks = np.clip(masks * 255., 0, 255).astype(np.uint8)
         return scores, masks
