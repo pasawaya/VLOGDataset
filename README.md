@@ -10,6 +10,7 @@
 3. [In-paints](https://github.com/JiahuiYu/generative_inpainting) the removed region.
 4. Computes [surface normals](https://github.com/StanfordVL/taskonomy/tree/master/taskbank) for the new frame without the objects.
 
+![Pipeline](pipeline.png)
 
 ## Installation
 
