@@ -25,12 +25,12 @@ def main(args):
 
     download_dir = 'temp'
     if not args.input_dir:
-        dataset = VLOGDataset(fps=args.fps, download_dir=download_dir, start=args.start_video_id, n=args.n)
+        dataset = VLOGDataset(fps=args.fps, download_dir=download_dir, start=args.start_video_idx, n=args.n)
     else:
         dataset = DirectoryDataset(args.input_dir, fps=args.fps)
 
     detector = MaskRCNN(args.confidence_threshold, args.area_threshold, classes=args.classes)
-    current = 0
+    current = args.start_output_id
 
     # Initialize loggers
     info = logging.getLogger('info')
@@ -107,10 +107,14 @@ if __name__ == '__main__':
                         default='inpaint/model_logs',
                         type=str,
                         help='Directory containing generative in-painting model.')
-    parser.add_argument('--start_video_id',
+    parser.add_argument('--start_video_idx',
                         default=0,
                         type=int,
                         help='The index of the first video to download.')
+    parser.add_argument('--start_output_id',
+                        default=0,
+                        type=int,
+                        help='The number to start naming output images from.')
     parser.add_argument('--n',
                         default=None,
                         type=int,
